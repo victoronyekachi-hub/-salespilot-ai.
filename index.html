@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b0f0d">
+<title>SalesPilot AI — Sales Workspace</title>
+<style>
+:root{--bg:#0b0f0d;--panel:#121916;--panel2:#17211c;--line:#26352d;--text:#edf5ef;--muted:#9aaba0;--green:#72f0a2;--green2:#2dc875;--red:#ff8f8f}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,select,textarea{font:inherit}button{cursor:pointer;border:0;border-radius:10px;padding:10px 14px;font-weight:650}
+.app{max-width:1200px;margin:auto;padding:18px}.top{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:8px 0 22px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:800}.logo{width:35px;height:35px;border-radius:11px;background:var(--green);color:#07130b;display:grid;place-items:center;font-weight:900}
+.badge{font-size:12px;color:var(--green);border:1px solid #315c41;border-radius:999px;padding:5px 9px}
+.layout{display:grid;grid-template-columns:220px 1fr;gap:20px;padding-top:20px}.nav{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px;height:max-content;position:sticky;top:12px}
+.nav button{width:100%;text-align:left;background:transparent;color:var(--muted);margin:3px 0}.nav button.active,.nav button:hover{background:#203329;color:var(--green)}
+.nav small{display:block;color:var(--muted);padding:20px 10px 5px}.main{min-width:0}.heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}.heading h1{font-size:27px;margin:0 0 5px}.sub{color:var(--muted);margin:0 0 18px}.primary{background:var(--green);color:#07130b}.secondary{background:#26352d;color:var(--text);border:1px solid #34473b}.danger{background:#3a2020;color:#ffc5c5}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0}.stat,.card{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:16px}.stat span{display:block;color:var(--muted);font-size:13px}.stat strong{display:block;font-size:26px;margin-top:6px}.stat em{font-size:12px;color:var(--green);font-style:normal}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.card h2{font-size:17px;margin:0 0 12px}.card p{color:var(--muted)}.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}.row:last-child{border:0}.pill{font-size:12px;background:#203329;color:var(--green);padding:4px 8px;border-radius:99px}
+label{display:block;color:var(--muted);font-size:13px;margin:12px 0 6px}input,select,textarea{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:#0c120f;color:var(--text);outline:none}input:focus,select:focus,textarea:focus{border-color:var(--green2)}textarea{min-height:160px;resize:vertical}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:600px}th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line)}th{color:var(--muted);font-size:12px;font-weight:600}td{font-size:14px}.empty{color:var(--muted);text-align:center;padding:25px}.hidden{display:none!important}.notice{color:var(--muted);font-size:12px;margin-top:12px}.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--green);color:#07130b;padding:10px 16px;border-radius:10px;font-weight:700;display:none;z-index:5}
+@media(max-width:760px){.app{padding:12px}.layout{grid-template-columns:1fr}.nav{position:static;display:grid;grid-template-columns:repeat(3,1fr);gap:4px}.nav button{text-align:center;font-size:12px;padding:10px 4px}.nav small{display:none}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.grid2{grid-template-columns:1fr}.heading h1{font-size:23px}.formgrid{grid-template-columns:1fr}.top{align-items:flex-start}.badge{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top"><div class="brand"><div class="logo">S</div>SalesPilot <span style="color:var(--green)">AI</span></div><span class="badge">FREE PROTOTYPE · V1</span></header>
+<div class="layout">
+<aside class="nav">
+<button class="active" data-page="dashboard">▦ &nbsp; Dashboard</button>
+<button data-page="leads">◎ &nbsp; Lead Manager</button>
+<button data-page="writer">✦ &nbsp; Message Writer</button>
+<button data-page="followups">↻ &nbsp; Follow-ups</button>
+<button data-page="settings">⚙ &nbsp; Settings & Data</button>
+<small>YOUR WORKSPACE</small>
+<p style="font-size:12px;color:var(--muted);padding:0 10px">A starter product for small teams and solo sellers.</p>
+</aside>
+<main class="main">
+<section id="page-dashboard">
+<div class="heading"><div><h1>Sales dashboard</h1><p class="sub">A clearer view of your outreach, all in one place.</p></div><button class="primary" onclick="showPage('leads')">＋ Add a lead</button></div>
+<div class="stats"><div class="stat"><span>Total leads</span><strong id="statLeads">0</strong><em>Saved in this browser</em></div><div class="stat"><span>Follow-ups due</span><strong id="statDue">0</strong><em>Needs your attention</em></div><div class="stat"><span>Contacted</span><strong id="statContacted">0</strong><em>Marked as contacted</em></div><div class="stat"><span>Customers</span><strong id="statCustomers">0</strong><em>Marked as won</em></div></div>
+<div class="grid2"><div class="card"><h2>Recent leads</h2><div id="recentLeads"></div></div><div class="card"><h2>Quick start</h2><div class="row"><div><strong>1. Add a prospect</strong><div class="notice">Save a business you want to contact.</div></div><button class="secondary" onclick="showPage('leads')">Open</button></div><div class="row"><div><strong>2. Write a tailored message</strong><div class="notice">Create an outreach draft for that prospect.</div></div><button class="secondary" onclick="showPage('writer')">Write</button></div><div class="row"><div><strong>3. Track your follow-ups</strong><div class="notice">Keep your next action visible.</div></div><button class="secondary" onclick="showPage('followups')">Track</button></div></div></div>
+</section>
+<section id="page-leads" class="hidden">
+<div class="heading"><div><h1>Lead manager</h1><p class="sub">Keep prospect details organized. Add only information you are allowed to use.</p></div><button class="secondary" onclick="exportData()">Export data</button></div>
+<div class="card"><h2>Add a lead</h2><form id="leadForm"><div class="formgrid"><div><label for="company">Business / company *</label><input id="company" required placeholder="e.g. Green Leaf Studio"></div><div><label for="contact">Contact person (optional)</label><input id="contact" placeholder="e.g. Jordan"></div><div><label for="email">Email or contact detail</label><input id="email" placeholder="e.g. hello@example.com"></div><div><label for="status">Status</label><select id="status"><option>New</option><option>Contacted</option><option>Follow-up</option><option>Won</option><option>Not interested</option></select></div><div><label for="nextDate">Next follow-up date</label><input type="date" id="nextDate"></div><div><label for="need">Potential need</label><input id="need" placeholder="e.g. needs a new website"></div></div><div class="actions"><button class="primary" type="submit">Save lead</button><button class="secondary" type="reset">Clear form</button></div></form></div>
+<div class="card" style="margin-top:14px"><div class="heading"><h2>All leads</h2><input id="leadSearch" style="max-width:260px" placeholder="Search leads…" oninput="renderLeads()"></div><div class="tablewrap"><table><thead><tr><th>Business</th><th>Contact</th><th>Status</th><th>Follow-up</th><th>Actions</th></tr></thead><tbody id="leadRows"></tbody></table></div></div>
+</section>
+<section id="page-writer" class="hidden">
+<div class="heading"><div><h1>Sales message writer</h1><p class="sub">Generate a useful first draft. Review and personalize it before sending.</p></div></div>
+<div class="card"><div class="formgrid"><div><label for="tone">Tone</label><select id="tone"><option value="friendly">Friendly and professional</option><option value="direct">Short and direct</option><option value="warm">Warm and conversational</option></select></div><div><label for="channel">Channel</label><select id="channel"><option value="email">Email</option><option value="dm">Social media DM</option><option value="whatsapp">WhatsApp</option></select></div><div><label for="prospect">Business name</label><input id="prospect" placeholder="Business name"></div><div><label for="person">Contact name (optional)</label><input id="person" placeholder="First name"></div><div><label for="offer">What are you offering?</label><input id="offer" placeholder="e.g. a mobile-friendly website"></div><div><label for="reason">Why might they need it?</label><input id="reason" placeholder="e.g. make it easier for customers to book"></div></div><label for="draft">Generated draft</label><textarea id="draft" placeholder="Your draft will appear here…"></textarea><div class="actions"><button class="primary" onclick="generateDraft()">✦ Generate draft</button><button class="secondary" onclick="copyDraft()">Copy message</button><button class="secondary" onclick="saveDraft()">Save draft as note</button></div><p class="notice">This prototype uses a built-in template, not a connected AI model. No message is sent automatically.</p></div>
+<div class="card" style="margin-top:14px"><h2>Saved drafts</h2><div id="savedDrafts"></div></div>
+</section>
+<section id="page-followups" class="hidden">
+<div class="heading"><div><h1>Follow-up manager</h1><p class="sub">See leads with follow-up dates and update their status.</p></div><button class="secondary" onclick="showPage('leads')">Manage leads</button></div>
+<div class="card"><div class="tablewrap"><table><thead><tr><th>Business</th><th>Contact</th><th>Due date</th><th>Status</th><th>Action</th></tr></thead><tbody id="followRows"></tbody></table></div></div>
+</section>
+<section id="page-settings" class="hidden">
+<div class="heading"><div><h1>Settings & data</h1><p class="sub">Your prototype saves data in this browser on this device.</p></div></div>
+<div class="card"><h2>Data controls</h2><p>Leads and saved drafts are stored locally in your browser. They are not synced to other devices and may be lost if browser storage is cleared.</p><div class="actions"><button class="secondary" onclick="exportData()">Download backup (JSON)</button><button class="danger" onclick="clearData()">Delete all local data</button></div><p class="notice">Before using this with real customers, we should add secure accounts, a server-side database, privacy controls, and an actual AI provider.</p></div>
+</section>
+</main></div></div><div class="toast" id="toast"></div>
+<script>
+const KEY='salespilot_v1';
+let data=JSON.parse(localStorage.getItem(KEY)||'{"leads":[],"drafts":[]}');
+function persist(){localStorage.setItem(KEY,JSON.stringify(data));renderAll()}
+function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';setTimeout(()=>t.style.display='none',2200)}
+function showPage(name){document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));document.getElementById('page-'+name).classList.remove('hidden');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===name));renderAll()}
+document.querySelectorAll('.nav button[data-page]').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+document.getElementById('leadForm').addEventListener('submit',e=>{e.preventDefault();data.leads.unshift({id:Date.now(),company:company.value.trim(),contact:contact.value.trim(),email:email.value.trim(),status:status.value,nextDate:nextDate.value,need:need.value.trim(),created:new Date().toISOString()});e.target.reset();persist();toast('Lead saved')});
+function renderAll(){renderDashboard();renderLeads();renderFollowups();renderDrafts()}
+function renderDashboard(){const l=data.leads;statLeads.textContent=l.length;statDue.textContent=l.filter(x=>x.nextDate&&x.nextDate<=new Date().toISOString().slice(0,10)&&!['Won','Not interested'].includes(x.status)).length;statContacted.textContent=l.filter(x=>['Contacted','Follow-up','Won'].includes(x.status)).length;statCustomers.textContent=l.filter(x=>x.status==='Won').length;recentLeads.innerHTML=l.length?l.slice(0,5).map(x=>`<div class="row"><div><strong>${esc(x.company)}</strong><div class="notice">${esc(x.contact||x.email||'No contact details')}</div></div><span class="pill">${esc(x.status)}</span></div>`).join(''):'<div class="empty">No leads yet. Add your first prospect to get started.</div>'}
+function renderLeads(){const q=(document.getElementById('leadSearch')?.value||'').toLowerCase();const arr=data.leads.filter(x=>(x.company+' '+x.contact+' '+x.email+' '+x.status).toLowerCase().includes(q));leadRows.innerHTML=arr.length?arr.map(x=>`<tr><td><strong>${esc(x.company)}</strong><div class="notice">${esc(x.need)}</div></td><td>${esc(x.contact||'—')}<div class="notice">${esc(x.email)}</div></td><td><select aria-label="Status for ${esc(x.company)}" onchange="changeStatus(${x.id},this.value)">${['New','Contacted','Follow-up','Won','Not interested'].map(s=>`<option ${s===x.status?'selected':''}>${s}</option>`).join('')}</select></td><td>${esc(x.nextDate||'—')}</td><td><button class="danger" onclick="deleteLead(${x.id})">Delete</button></td></tr>`).join(''):'<tr><td colspan="5" class="empty">No matching leads.</td></tr>'}
+function renderFollowups(){const arr=data.leads.filter(x=>x.nextDate&&!['Won','Not interested'].includes(x.status)).sort((a,b)=>a.nextDate.localeCompare(b.nextDate));followRows.innerHTML=arr.length?arr.map(x=>`<tr><td><strong>${esc(x.company)}</strong></td><td>${esc(x.contact||x.email||'—')}</td><td>${esc(x.nextDate)} ${x.nextDate<=new Date().toISOString().slice(0,10)?'<span class="pill">Due</span>':''}</td><td><span class="pill">${esc(x.status)}</span></td><td><button class="secondary" onclick="changeStatus(${x.id},'Contacted')">Mark contacted</button></td></tr>`).join(''):'<tr><td colspan="5" class="empty">No follow-ups scheduled. Add a date to a lead.</td></tr>'}
+function changeStatus(id,s){const x=data.leads.find(x=>x.id===id);if(x){x.status=s;persist();toast('Status updated')}}
+function deleteLead(id){if(confirm('Delete this lead?')){data.leads=data.leads.filter(x=>x.id!==id);persist();toast('Lead deleted')}}
+function generateDraft(){const c=document.getElementById('prospect').value.trim()||'there';const p=document.getElementById('person').value.trim();const offer=document.getElementById('offer').value.trim()||'a service that may help your business';const reason=document.getElementById('reason').value.trim()||'improve the experience for your customers';const tone=document.getElementById('tone').value;const channel=document.getElementById('channel').value;let greeting=p?`Hi ${p},`:(channel==='email'?'Hello,':'Hi there,');let body=tone==='direct'?`I’m reaching out because I offer ${offer}. It may help ${c} ${reason}. Would you be open to a quick conversation?`:tone==='warm'?`I came across ${c} and wanted to introduce myself. I offer ${offer}, which could help you ${reason}. If this is something you're considering, I'd be happy to share a few ideas. No pressure either way.`:`I’m reaching out because I offer ${offer}, and thought it could help ${c} ${reason}. If this is relevant to your plans, would you be open to a brief conversation?`;let sign=channel==='email'?`\n\nBest regards,\n[Your name]`:'';document.getElementById('draft').value=`${greeting}\n\n${body}${sign}`}
+async function copyDraft(){const d=draft.value;if(!d.trim())return toast('Generate or write a message first');try{await navigator.clipboard.writeText(d);toast('Message copied')}catch(e){draft.select();document.execCommand('copy');toast('Message copied')}}
+function saveDraft(){if(!draft.value.trim())return toast('Write a message first');data.drafts.unshift({id:Date.now(),text:draft.value,company:prospect.value.trim()||'Untitled prospect',date:new Date().toLocaleDateString()});persist();toast('Draft saved')}
+function renderDrafts(){savedDrafts.innerHTML=data.drafts.length?data.drafts.map(x=>`<div class="row"><div><strong>${esc(x.company)}</strong><div class="notice">${esc(x.date)} · ${esc(x.text.slice(0,90))}${x.text.length>90?'…':''}</div></div><button class="secondary" onclick="loadDraft(${x.id})">Open</button></div>`).join(''):'<div class="empty">No saved drafts yet.</div>'}
+function loadDraft(id){const x=data.drafts.find(d=>d.id===id);if(x){draft.value=x.text;prospect.value=x.company;toast('Draft opened')}}
+function exportData(){const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='salespilot-backup.json';a.click();URL.revokeObjectURL(a.href);toast('Backup prepared')}
+function clearData(){if(confirm('This permanently deletes leads and drafts saved in this browser. Continue?')){data={leads:[],drafts:[]};persist();toast('Local data cleared')}}
+renderAll();
+</script>
+</body></html>

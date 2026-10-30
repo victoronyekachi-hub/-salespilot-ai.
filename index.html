@@ -181,7 +181,49 @@ function addMessage(sender, message) {
   messages.appendChild(paragraph);
   messages.scrollTop = messages.scrollHeight;
 }
+async function findLeads() {
 
+  const industry = document.getElementById("lead-industry").value.trim();
+  const location = document.getElementById("lead-location").value.trim();
+  const count = document.getElementById("lead-count").value;
+  const results = document.getElementById("lead-results");
+
+  if (!industry || !location) {
+    results.textContent = "Please enter an industry and location.";
+    return;
+  }
+
+  results.textContent = "SalesPilot is preparing your prospecting search...";
+
+  try {
+
+    const response = await fetch(
+      "https://salespilot-ai-backend.victoronyekachi070.workers.dev/",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: `Help me find ${count} potential ${industry} customers in ${location}. Give me a practical prospecting plan and reliable sources where I can identify real businesses. Do not invent company names, websites, phone numbers or email addresses.`
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Search failed.");
+    }
+
+    results.textContent = data.reply;
+
+  } catch (error) {
+
+    results.textContent = "Error: " + error.message;
+
+  }
+}
 async function sendMessage() {
 
   const input = document.getElementById("chat-input");

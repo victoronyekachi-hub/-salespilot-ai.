@@ -289,33 +289,41 @@ footer {
   </section>
 
   <section class="section">
-    <h2>Prospect Research</h2>
-    <p class="small">
-      Describe your target market to generate a focused prospecting plan.
-      Results are AI-generated suggestions, not verified business records.
-    </p>
+  <h2>Real Business Lead Finder</h2>
 
-    <label for="industry">Industry</label>
-    <input id="industry" placeholder="Example: Web design agencies">
+  <p class="small">
+    Search actual businesses using public OpenStreetMap data.
+  </p>
 
-    <label for="location">Target location</label>
-    <input id="location" placeholder="Example: Texas, USA">
+  <label for="industry">Business industry</label>
+  <input
+    id="industry"
+    type="text"
+    placeholder="Example: restaurant"
+  >
 
-    <label for="quantity">Number of prospect ideas</label>
-    <select id="quantity">
-      <option value="5">5 ideas</option>
-      <option value="10" selected>10 ideas</option>
-      <option value="20">20 ideas</option>
-    </select>
+  <label for="location">City and country</label>
+  <input
+    id="location"
+    type="text"
+    placeholder="Example: Houston, Texas, USA"
+  >
 
-    <button id="researchButton" type="button">
-      Generate Research Plan
-    </button>
+  <label for="quantity">Number of businesses</label>
+  <select id="quantity">
+    <option value="5">5 businesses</option>
+    <option value="10" selected>10 businesses</option>
+    <option value="20">20 businesses</option>
+  </select>
 
-    <div id="researchResult">
-      Your research results will appear here.
-    </div>
-  </section>
+  <button id="researchButton" type="button">
+    Find Businesses
+  </button>
+
+  <div id="researchResult" style="margin-top:20px;">
+    Your business search results will appear here.
+  </div>
+</section>
 
 </main>
 

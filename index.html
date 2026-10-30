@@ -1321,6 +1321,66 @@ dealValue.onchange = () => {
   renderLeads();
   addSaveButtons();
 })();
+/* SALESPILOT REVENUE DASHBOARD */
+(function () {
+  const KEY = "salespilot_saved_leads";
+  const container = document.querySelector(".container");
+
+  if (!container) return;
+
+  const section = document.createElement("section");
+  section.className = "section";
+  section.style.marginTop = "30px";
+
+  section.innerHTML = `
+    <h2>💰 Revenue Dashboard</h2>
+    <p class="small">Track your sales pipeline and earnings.</p>
+    <div id="revenueStats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:20px;"></div>
+  `;
+
+  container.appendChild(section);
+
+  function updateRevenue() {
+    const leads = JSON.parse(localStorage.getItem(KEY) || "[]");
+
+    const total = leads.reduce((sum, lead) => sum + (Number(lead.dealValue) || 0), 0);
+
+    const closed = leads
+      .filter(lead => lead.status === "Converted")
+      .reduce((sum, lead) => sum + (Number(lead.dealValue) || 0), 0);
+
+    const open = total - closed;
+
+    const deals = leads.filter(lead => Number(lead.dealValue) > 0).length;
+
+    const stats = [
+      ["Total Pipeline", total],
+      ["Closed Revenue", closed],
+      ["Open Pipeline", open],
+      ["Deals Tracked", deals]
+    ];
+
+    document.getElementById("revenueStats").innerHTML = stats.map(item => `
+      <div style="padding:18px;background:#10251c;border:1px solid #294638;border-radius:12px;">
+        <small>${item[0]}</small>
+        <h2 style="color:#36d98a;margin:10px 0;">$${item[1].toLocaleString("en-US")}</h2>
+      </div>
+    `).join("");
+  }
+
+  updateRevenue();
+
+  window.addEventListener("storage", updateRevenue);
+
+  const leadList = document.getElementById("savedLeads");
+
+  if (leadList) {
+    new MutationObserver(updateRevenue).observe(leadList, {
+      childList: true,
+      subtree: true
+    });
+  }
+})();
 </script>
 
 </body>

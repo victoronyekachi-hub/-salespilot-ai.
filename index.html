@@ -1200,7 +1200,18 @@ filterBox.querySelectorAll("input, select").forEach(control => {
 
       const details = document.createElement("p");
       details.textContent = lead.address || "Address not listed";
-
+const dealValue = document.createElement("input");
+dealValue.type = "number";
+dealValue.placeholder = "Deal value (USD)";
+dealValue.min = "0";
+dealValue.step = "0.01";
+dealValue.value = lead.dealValue || "";
+dealValue.style.cssText = "width:100%;margin:12px 0;padding:12px;";
+dealValue.onchange = () => {
+  lead.dealValue = Number(dealValue.value) || 0;
+  saveLeads();
+  renderLeads();
+};
       const status = document.createElement("select");
       statuses.forEach(value => {
         const option = document.createElement("option");
@@ -1247,7 +1258,7 @@ filterBox.querySelectorAll("input, select").forEach(control => {
         }
       };
 
-      card.append(title, details, status, notes, followup, remove);
+      card.append(title, details, dealValue, status, notes, followup, remove);
       list.appendChild(card);
     });
   }

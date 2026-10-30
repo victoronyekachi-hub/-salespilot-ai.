@@ -617,7 +617,36 @@ if (findButton && resultBox) {
 
         card.appendChild(name);
         card.appendChild(details);
+// WEBSITE OPPORTUNITY ANALYSIS
 
+const analysis = document.createElement("div");
+
+analysis.style.cssText =
+  "margin-top:12px;padding:12px;background:#0b120e;border-radius:8px;";
+
+const hasWebsite = Boolean(business.website);
+
+const title = document.createElement("strong");
+
+title.textContent = hasWebsite
+  ? "Website listed — review needed"
+  : "Website opportunity — no website listed";
+
+title.style.color = hasWebsite ? "#36d98a" : "#ffcc66";
+
+const description = document.createElement("p");
+
+description.textContent = hasWebsite
+  ? "This business has a listed website. Review its design, mobile experience and performance manually."
+  : "No website is listed in the available business data. This business may be worth investigating as a potential web design prospect.";
+
+description.style.cssText =
+  "color:#91a198;font-size:13px;line-height:1.5;";
+
+analysis.appendChild(title);
+analysis.appendChild(description);
+
+card.appendChild(analysis);
         resultBox.appendChild(card);
       });
 

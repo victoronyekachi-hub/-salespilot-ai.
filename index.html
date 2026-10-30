@@ -1134,7 +1134,58 @@ if (!reminders.length) {
     });
 
     list.innerHTML = "";
+/* LEAD SEARCH AND FILTERS */
+const filterBox = document.createElement("div");
 
+filterBox.style.cssText =
+  "display:grid;gap:12px;margin:18px 0;padding:15px;background:#10251c;border-radius:12px;";
+
+filterBox.innerHTML = `
+  <input id="leadSearch" placeholder="🔍 Search saved businesses...">
+
+  <select id="leadStatusFilter">
+    <option value="All">All Lead Statuses</option>
+    <option value="New">New</option>
+    <option value="Contacted">Contacted</option>
+    <option value="Interested">Interested</option>
+    <option value="Converted">Converted</option>
+  </select>
+
+  <label style="color:#36d98a;">
+    <input type="checkbox" id="overdueFilter">
+    Show overdue follow-ups only
+  </label>
+`;
+
+list.appendChild(filterBox);
+
+function applyLeadFilters() {
+  const search = document.getElementById("leadSearch").value.toLowerCase();
+  const selectedStatus = document.getElementById("leadStatusFilter").value;
+  const overdueOnly = document.getElementById("overdueFilter").checked;
+
+  Array.from(list.children).forEach(card => {
+    if (!card.querySelector("h3") || !card.querySelector("select")) return;
+
+    const name = card.querySelector("h3").textContent.toLowerCase();
+    const status = card.querySelector("select").value;
+    const date = card.querySelector('input[type="date"]').value;
+
+    const isOverdue = date && date < new Date().toLocaleDateString("en-CA");
+
+    const matches =
+      name.includes(search) &&
+      (selectedStatus === "All" || status === selectedStatus) &&
+      (!overdueOnly || isOverdue);
+
+    card.style.display = matches ? "" : "none";
+  });
+}
+
+filterBox.querySelectorAll("input, select").forEach(control => {
+  control.addEventListener("input", applyLeadFilters);
+  control.addEventListener("change", applyLeadFilters);
+});
     if (!leads.length) {
       list.textContent = "No saved leads yet. Search for businesses and save prospects to begin.";
       return;

@@ -1149,7 +1149,7 @@ card.appendChild(outreachResult);
     const result = document.getElementById("researchResult");
     if (!result) return;
 
-    result.querySelectorAll(":scope > div").forEach(card => {
+    Array.from(result.children).filter(card => card.tagName === "DIV").forEach(card => {
       if (card.dataset.leadSaveAdded) return;
 
       const heading = card.querySelector("h3");

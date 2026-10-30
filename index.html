@@ -480,6 +480,37 @@ textarea {
   content: "";
   margin-bottom: 5px;
 }
+.hero-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 25px;
+}
+
+.hero-actions a {
+  padding: 14px 22px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 700;
+  text-align: center;
+}
+
+.hero-primary {
+  background: #36d98a;
+  color: #06120b;
+}
+
+.hero-secondary {
+  background: rgba(255,255,255,.08);
+  color: white;
+  border: 1px solid rgba(255,255,255,.2);
+}
+
+@media(max-width:600px) {
+  .hero-actions {
+    flex-direction: column;
+  }
+}
 </style>
 </head>
 
@@ -500,7 +531,10 @@ Into Revenue.</h1>
   <p class="subtitle">
     Discover real businesses, identify website opportunities, generate personalized outreach, and turn prospects into paying clients — all from one intelligent workspace.
   </p>
-
+<div class="hero-actions">
+  <a href="#researchButton" class="hero-primary">Find Businesses →</a>
+  <a href="#chatMessages" class="hero-secondary">Try AI Assistant</a>
+</div>
   <div class="cards">
     <div class="card">
       <h3>AI Assistant</h3>

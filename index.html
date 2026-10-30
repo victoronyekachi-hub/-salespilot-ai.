@@ -538,6 +538,101 @@ async function checkBackend() {
 }
 
 checkBackend();
+/* REAL BUSINESS LEAD FINDER */
+
+const BUSINESS_API =
+"https://salespilot-ai-backend.victoronyekachi070.workers.dev/";
+
+const findButton = document.getElementById("researchButton");
+const resultBox = document.getElementById("researchResult");
+
+if (findButton && resultBox) {
+
+  findButton.onclick = async function () {
+
+    const industry = document.getElementById("industry").value.trim();
+    const location = document.getElementById("location").value.trim();
+    const limit = Number(document.getElementById("quantity").value);
+
+    if (!industry || !location) {
+      resultBox.textContent = "Enter an industry and location first.";
+      return;
+    }
+
+    findButton.disabled = true;
+    findButton.textContent = "Searching...";
+    resultBox.textContent = "Finding real business listings...";
+
+    try {
+
+      const response = await fetch(BUSINESS_API, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          action: "findBusinesses",
+          industry: industry,
+          location: location,
+          limit: limit
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Business search failed.");
+      }
+
+      resultBox.innerHTML = "";
+
+      const heading = document.createElement("h3");
+      heading.textContent = data.total + " businesses found";
+      resultBox.appendChild(heading);
+
+      if (!data.businesses || data.businesses.length === 0) {
+        resultBox.appendChild(
+          document.createTextNode("No matching listings found. Try another industry or city.")
+        );
+      }
+
+      data.businesses.forEach(function (business) {
+
+        const card = document.createElement("div");
+        card.style.cssText =
+          "padding:15px;margin:12px 0;background:#18231d;border:1px solid #29372f;border-radius:10px;";
+
+        const name = document.createElement("h3");
+        name.textContent = business.name;
+
+        const details = document.createElement("p");
+        details.style.color = "#91a198";
+        details.textContent =
+          "Category: " + business.category +
+          "\nAddress: " + (business.address || "Not listed") +
+          "\nWebsite: " + (business.website || "Not listed") +
+          "\nPhone: " + (business.phone || "Not listed");
+
+        details.style.whiteSpace = "pre-line";
+
+        card.appendChild(name);
+        card.appendChild(details);
+
+        resultBox.appendChild(card);
+      });
+
+    } catch (error) {
+
+      resultBox.textContent = "Search error: " + error.message;
+
+    } finally {
+
+      findButton.disabled = false;
+      findButton.textContent = "Find Businesses";
+
+    }
+  };
+}
 </script>
 
 </body>

@@ -112,35 +112,133 @@ async function askSalesPilot(message) {
   }
 }
 </script>
-<div id="salespilot-chat" style="max-width:600px;margin:40px auto;padding:20px;background:#111;color:white;border-radius:12px;">
+<div id="salespilot-chat" style="max-width:600px;margin:40px auto;padding:20px;background:#111;color:white;border-radius:12px;font-family:Arial,sans-serif;">
+
   <h2>SalesPilot AI Assistant</h2>
-  <div id="chat-messages" style="min-height:100px;margin-bottom:15px;">
-    <p>Welcome! How can I help your business today?</p>
+
+  <div id="chat-messages" style="min-height:120px;max-height:350px;overflow-y:auto;margin-bottom:15px;">
+    <p>Welcome! I'm SalesPilot AI. How can I help your business today?</p>
   </div>
-  <input id="chat-input" type="text" placeholder="Ask SalesPilot anything..." style="width:100%;padding:12px;box-sizing:border-box;">
-  <button onclick="sendMessage()" style="margin-top:10px;padding:12px 20px;background:green;color:white;border:0;border-radius:6px;">
+
+  <input
+    id="chat-input"
+    type="text"
+    placeholder="Ask SalesPilot anything..."
+    style="width:100%;padding:13px;box-sizing:border-box;border-radius:6px;border:1px solid #444;"
+  >
+
+  <button
+    id="send-button"
+    onclick="sendMessage()"
+    style="margin-top:10px;padding:12px 20px;background:green;color:white;border:0;border-radius:6px;"
+  >
     Send Message
   </button>
+
 </div>
 
 <script>
-async function sendMessage() {
-  const input = document.getElementById("chat-input");
+const SALES_PILOT_API =
+"https://salespilot-ai-backend.victoronyekachi070.workers.dev/";
+
+let isSending = false;
+
+function addMessage(sender, message) {
   const messages = document.getElementById("chat-messages");
+
+  const paragraph = document.createElement("p");
+  const label = document.createElement("strong");
+
+  label.textContent = sender + ": ";
+  paragraph.appendChild(label);
+  paragraph.appendChild(document.createTextNode(message));
+
+  messages.appendChild(paragraph);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+async function sendMessage() {
+
+  const input = document.getElementById("chat-input");
+  const button = document.getElementById("send-button");
+
   const message = input.value.trim();
 
-  if (!message) return;
+  if (!message || isSending) return;
 
-  messages.innerHTML += "<p><b>You:</b> " + message + "</p>";
+  isSending = true;
+  button.disabled = true;
+  button.textContent = "Thinking...";
+
+  addMessage("You", message);
+
   input.value = "";
 
-  messages.innerHTML += "<p id='loading'>SalesPilot is thinking...</p>";
+  const loading = document.createElement("p");
+  loading.textContent = "SalesPilot is preparing your response...";
+  loading.id = "salespilot-loading";
 
-  const reply = await askSalesPilot(message);
+  document.getElementById("chat-messages").appendChild(loading);
 
-  document.getElementById("loading").remove();
-  messages.innerHTML += "<p><b>SalesPilot:</b> " + reply + "</p>";
+  try {
+
+    const controller = new AbortController();
+
+    const timeout = setTimeout(() => controller.abort(), 45000);
+
+    const response = await fetch(SALES_PILOT_API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: message
+      }),
+      signal: controller.signal
+    });
+
+    clearTimeout(timeout);
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Server request failed.");
+    }
+
+    if (!data.reply) {
+      throw new Error("The AI returned an empty response.");
+    }
+
+    loading.remove();
+
+    addMessage("SalesPilot", data.reply);
+
+  } catch (error) {
+
+    loading.remove();
+
+    console.error("SalesPilot error:", error);
+
+    if (error.name === "AbortError") {
+      addMessage("SalesPilot", "The request took too long. Please try again.");
+    } else {
+      addMessage("SalesPilot", "Connection error: " + error.message);
+    }
+
+  } finally {
+
+    isSending = false;
+    button.disabled = false;
+    button.textContent = "Send Message";
+
+  }
 }
+
+document.getElementById("chat-input").addEventListener("keydown", function(event) {
+  if (event.key === "Enter") {
+    sendMessage();
+  }
+});
 </script>
 
 </body>

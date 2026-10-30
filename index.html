@@ -108,7 +108,7 @@ async function askSalesPilot(message) {
 
   } catch (error) {
     console.error("SalesPilot error:", error);
-    return "Sorry, SalesPilot AI is temporarily unavailable.";
+    return "ERROR: " + error.message;
   }
 }
 </script>

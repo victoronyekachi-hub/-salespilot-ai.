@@ -163,108 +163,94 @@ async function askSalesPilot(message) {
 </div>
 
 <script>
+
 const SALES_PILOT_API =
 "https://salespilot-ai-backend.victoronyekachi070.workers.dev/";
 
 let isSending = false;
+let isFindingLeads = false;
 
+
+// DISPLAY CHAT MESSAGES
 function addMessage(sender, message) {
+
   const messages = document.getElementById("chat-messages");
 
   const paragraph = document.createElement("p");
   const label = document.createElement("strong");
 
   label.textContent = sender + ": ";
+
   paragraph.appendChild(label);
   paragraph.appendChild(document.createTextNode(message));
 
   messages.appendChild(paragraph);
   messages.scrollTop = messages.scrollHeight;
-}
-async function findLeads() {
-const industry = document.getElementById(“lead-industry”).value.trim();
-const location = document.getElementById(“lead-location”).value.trim();
-const count = document.getElementById(“lead-count”).value;
-const results = document.getElementById(“lead-results”);
-const button = document.querySelector(”#lead-finder button”);
 
-if (!industry || !location) {
-results.textContent = “Please enter an industry and location.”;
-return;
 }
 
-button.disabled = true;
-button.textContent = “Searching…”;
-results.textContent = “SalesPilot is researching your market…”;
 
-const controller = new AbortController();
-const timeout = setTimeout(() => controller.abort(), 45000);
+// CONNECT TO SALES PILOT AI
+async function callSalesPilot(message) {
 
-try {
-const response = await fetch(
-“https://salespilot-ai-backend.victoronyekachi070.workers.dev/”,
-{
-method: “POST”,
-headers: {
-“Content-Type”: “application/json”
-},
-body: JSON.stringify({
-message: `Act as a professional B2B sales researcher.
+  const controller = new AbortController();
 
-Research request:
-Industry: ${industry}
-Location: ${location}
-Requested leads: ${count}
+  const timeout = setTimeout(() => {
+    controller.abort();
+  }, 45000);
 
-Provide:
+  try {
 
-1. A prospecting strategy for this market.
-2. The best types of businesses to target.
-3. Search phrases to find genuine businesses.
-4. Reliable directories and public sources.
-5. A simple qualification checklist.
+    const response = await fetch(SALES_PILOT_API, {
 
-IMPORTANT:
-Do not invent company names, websites, phone numbers, addresses or email addresses.
-Clearly distinguish research suggestions from verified business records.
-Format the answer clearly with headings and numbered steps.`
-}),
-signal: controller.signal
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify({
+        message: message
+      }),
+
+      signal: controller.signal
+
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "AI request failed.");
+    }
+
+    if (!data.reply) {
+      throw new Error("No AI response received.");
+    }
+
+    return data.reply;
+
+  } finally {
+
+    clearTimeout(timeout);
+
+  }
+
 }
-);
 
-const data = await response.json();
-if (!response.ok) {
-  throw new Error(data.error || "Backend request failed.");
-}
-if (!data.reply) {
-  throw new Error("No AI response was received.");
-}
-results.textContent = data.reply;
 
-} catch (error) {
-console.error(“Lead Finder error:”, error);
-
-results.textContent = error.name === "AbortError"
-  ? "The request timed out. Please try again."
-  : "Connection failed: " + error.message;
-
-} finally {
-clearTimeout(timeout);
-button.disabled = false;
-button.textContent = “Find Potential Leads”;
-}
-}
-async function sendMessage() {
+// AI CHAT ASSISTANT
+window.sendMessage = async function() {
 
   const input = document.getElementById("chat-input");
   const button = document.getElementById("send-button");
+  const messages = document.getElementById("chat-messages");
 
   const message = input.value.trim();
 
   if (!message || isSending) return;
 
   isSending = true;
+
   button.disabled = true;
   button.textContent = "Thinking...";
 
@@ -273,71 +259,142 @@ async function sendMessage() {
   input.value = "";
 
   const loading = document.createElement("p");
-  loading.textContent = "SalesPilot is preparing your response...";
-  loading.id = "salespilot-loading";
 
-  document.getElementById("chat-messages").appendChild(loading);
+  loading.textContent = "SalesPilot is thinking...";
+  messages.appendChild(loading);
 
   try {
 
-    const controller = new AbortController();
-
-    const timeout = setTimeout(() => controller.abort(), 45000);
-
-    const response = await fetch(SALES_PILOT_API, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        message: message
-      }),
-      signal: controller.signal
-    });
-
-    clearTimeout(timeout);
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.error || "Server request failed.");
-    }
-
-    if (!data.reply) {
-      throw new Error("The AI returned an empty response.");
-    }
+    const reply = await callSalesPilot(message);
 
     loading.remove();
 
-    addMessage("SalesPilot", data.reply);
+    addMessage("SalesPilot", reply);
 
   } catch (error) {
 
     loading.remove();
 
-    console.error("SalesPilot error:", error);
+    console.error("SalesPilot Chat Error:", error);
 
-    if (error.name === "AbortError") {
-      addMessage("SalesPilot", "The request took too long. Please try again.");
-    } else {
-      addMessage("SalesPilot", "Connection error: " + error.message);
-    }
+    addMessage(
+      "SalesPilot",
+      error.name === "AbortError"
+        ? "The request timed out. Please try again."
+        : "Connection error: " + error.message
+    );
 
   } finally {
 
     isSending = false;
+
     button.disabled = false;
     button.textContent = "Send Message";
 
   }
-}
 
-document.getElementById("chat-input").addEventListener("keydown", function(event) {
-  if (event.key === "Enter") {
-    sendMessage();
+};
+
+
+// LEAD FINDER
+window.findLeads = async function() {
+
+  const industry = document.getElementById("lead-industry").value.trim();
+
+  const location = document.getElementById("lead-location").value.trim();
+
+  const count = document.getElementById("lead-count").value;
+
+  const results = document.getElementById("lead-results");
+
+  const button = document.querySelector("#lead-finder button");
+
+  if (!industry || !location) {
+
+    results.textContent = "Please enter an industry and location.";
+
+    return;
+
   }
-});
-</script>
 
+  if (isFindingLeads) return;
+
+  isFindingLeads = true;
+
+  button.disabled = true;
+  button.textContent = "Searching...";
+
+  results.textContent = "SalesPilot is researching your market...";
+
+  try {
+
+    const message = `
+You are SalesPilot, a professional B2B sales research assistant.
+
+The user wants to research potential business customers.
+
+Industry: ${industry}
+
+Location: ${location}
+
+Requested number of leads: ${count}
+
+Provide:
+
+1. A practical prospecting strategy.
+2. The types of businesses worth targeting.
+3. Search phrases for finding genuine businesses.
+4. Reliable public business directories.
+5. A prospect qualification checklist.
+6. Suggestions for approaching these businesses.
+
+IMPORTANT:
+Never invent company names, email addresses, phone numbers or websites.
+
+Do not claim that businesses have been verified unless they actually have been.
+
+Clearly explain that this is a prospecting research report, not a verified lead database.
+
+Use clear headings and actionable advice.
+`;
+
+    const reply = await callSalesPilot(message);
+
+    results.textContent = reply;
+
+  } catch (error) {
+
+    console.error("SalesPilot Lead Finder Error:", error);
+
+    results.textContent =
+      error.name === "AbortError"
+        ? "The search timed out. Please try again."
+        : "Lead Finder error: " + error.message;
+
+  } finally {
+
+    isFindingLeads = false;
+
+    button.disabled = false;
+    button.textContent = "Find Potential Leads";
+
+  }
+
+};
+
+
+// SEND CHAT MESSAGE WHEN ENTER IS PRESSED
+document.getElementById("chat-input").addEventListener(
+  "keydown",
+  function(event) {
+
+    if (event.key === "Enter") {
+      window.sendMessage();
+    }
+
+  }
+);
+
+</script>
 </body>
 </html>

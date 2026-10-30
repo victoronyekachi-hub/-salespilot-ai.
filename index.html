@@ -112,6 +112,31 @@ async function askSalesPilot(message) {
   }
 }
 </script>
+<section id="lead-finder" style="max-width:700px;margin:40px auto;padding:25px;background:#111;color:white;border-radius:12px;font-family:Arial,sans-serif;">
+
+  <h2>SalesPilot Lead Finder</h2>
+  <p>Discover potential customers for your business.</p>
+
+  <label>Business Industry</label>
+  <input id="lead-industry" placeholder="e.g. Dental clinics, restaurants, salons" style="width:100%;padding:12px;margin:10px 0;box-sizing:border-box;">
+
+  <label>US City or State</label>
+  <input id="lead-location" placeholder="e.g. Houston, Texas" style="width:100%;padding:12px;margin:10px 0;box-sizing:border-box;">
+
+  <label>Number of Leads</label>
+  <select id="lead-count" style="width:100%;padding:12px;margin:10px 0;">
+    <option value="5">5 leads</option>
+    <option value="10">10 leads</option>
+    <option value="20">20 leads</option>
+  </select>
+
+  <button onclick="findLeads()" style="padding:13px 22px;background:green;color:white;border:0;border-radius:6px;">
+    Find Potential Leads
+  </button>
+
+  <div id="lead-results" style="margin-top:20px;"></div>
+
+</section>
 <div id="salespilot-chat" style="max-width:600px;margin:40px auto;padding:20px;background:#111;color:white;border-radius:12px;font-family:Arial,sans-serif;">
 
   <h2>SalesPilot AI Assistant</h2>

@@ -1061,7 +1061,63 @@ card.appendChild(outreachResult);
   function renderLeads() {
     const stats = document.getElementById("leadStats");
     const list = document.getElementById("savedLeads");
+/* SMART FOLLOW-UP REMINDERS */
+let reminderBox = document.getElementById("followupReminders");
 
+if (!reminderBox) {
+  reminderBox = document.createElement("div");
+  reminderBox.id = "followupReminders";
+  reminderBox.style.cssText =
+    "padding:16px;margin:18px 0;background:#10251c;border:1px solid #294638;border-radius:12px;";
+  list.parentNode.insertBefore(reminderBox, list);
+}
+
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+
+const reminders = leads
+  .filter(lead => lead.followup)
+  .map(lead => {
+    const parts = lead.followup.split("-");
+    const date = new Date(
+      Number(parts[0]),
+      Number(parts[1]) - 1,
+      Number(parts[2])
+    );
+    date.setHours(0, 0, 0, 0);
+
+    return { ...lead, reminderDate: date };
+  })
+  .filter(lead => lead.reminderDate <= new Date(today.getTime() + 7 * 86400000))
+  .sort((a, b) => a.reminderDate - b.reminderDate);
+
+reminderBox.innerHTML = "<h3>🔔 Follow-up Reminders</h3>";
+
+if (!reminders.length) {
+  reminderBox.innerHTML +=
+    "<p>No follow-ups due in the next 7 days.</p>";
+} else {
+  reminders.forEach(lead => {
+    const days = Math.round(
+      (lead.reminderDate - today) / 86400000
+    );
+
+    const label = days < 0
+      ? "OVERDUE"
+      : days === 0
+      ? "DUE TODAY"
+      : "UPCOMING";
+
+    const item = document.createElement("p");
+    item.style.cssText =
+      "padding:10px;margin:8px 0;background:#07140f;border-radius:8px;";
+
+    item.textContent =
+      label + " — " + lead.name + " (" + lead.followup + ")";
+
+    reminderBox.appendChild(item);
+  });
+}
     const statuses = ["New", "Contacted", "Interested", "Converted"];
 
     stats.innerHTML = "";

@@ -181,7 +181,7 @@ function addMessage(sender, message) {
   messages.appendChild(paragraph);
   messages.scrollTop = messages.scrollHeight;
 }
-window.findLeads = async function() {
+async function findLeads() {
 const industry = document.getElementById(“lead-industry”).value.trim();
 const location = document.getElementById(“lead-location”).value.trim();
 const count = document.getElementById(“lead-count”).value;

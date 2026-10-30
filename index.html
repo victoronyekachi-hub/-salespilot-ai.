@@ -647,6 +647,86 @@ analysis.appendChild(title);
 analysis.appendChild(description);
 
 card.appendChild(analysis);
+// AI OUTREACH GENERATOR
+
+const outreachButton = document.createElement("button");
+
+outreachButton.textContent = "Generate Outreach Email";
+
+outreachButton.style.cssText =
+  "width:100%;margin-top:12px;background:#36d98a;color:#06120b;padding:12px;border:0;border-radius:8px;font-weight:bold;";
+
+const outreachResult = document.createElement("div");
+
+outreachResult.style.cssText =
+  "margin-top:12px;padding:12px;background:#0b120e;border-radius:8px;white-space:pre-wrap;line-height:1.6;";
+
+outreachButton.onclick = async function() {
+
+  outreachButton.disabled = true;
+  outreachButton.textContent = "Generating...";
+
+  try {
+
+    const prompt =
+      "Write a personalized, professional cold outreach email for this business. " +
+      "We offer professional website design services. " +
+      "Business name: " + business.name + ". " +
+      "Industry: " + business.category + ". " +
+      "Location: " + (business.address || location) + ". " +
+      "Website listed: " + (business.website || "No website listed") + ". " +
+      "Explain a potential business benefit without inventing problems or claiming " +
+      "you inspected the website. Include a subject line and a natural call to action. " +
+      "Keep it concise and persuasive.";
+
+    const response = await fetch(BUSINESS_API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: prompt
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.reply) {
+      throw new Error(data.error || "Could not generate email.");
+    }
+
+    outreachResult.textContent = data.reply;
+
+    const copyButton = document.createElement("button");
+    copyButton.textContent = "Copy Email";
+    copyButton.className = "secondary";
+
+    copyButton.onclick = async function() {
+      try {
+        await navigator.clipboard.writeText(data.reply);
+        copyButton.textContent = "Copied!";
+      } catch (error) {
+        outreachResult.textContent +=
+          "\n\nClipboard unavailable. Select and copy the email manually.";
+      }
+    };
+
+    outreachResult.appendChild(copyButton);
+
+  } catch (error) {
+
+    outreachResult.textContent = "Error: " + error.message;
+
+  } finally {
+
+    outreachButton.disabled = false;
+    outreachButton.textContent = "Generate Outreach Email";
+
+  }
+};
+
+card.appendChild(outreachButton);
+card.appendChild(outreachResult);
         resultBox.appendChild(card);
       });
 

@@ -1031,6 +1031,140 @@ card.appendChild(outreachResult);
     }
   };
 }
+/* SALESPILOT LEAD MANAGEMENT */
+(function () {
+  const STORAGE_KEY = "salespilot_saved_leads";
+  let leads = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+
+  const container = document.querySelector(".container");
+  if (!container) return;
+
+  const section = document.createElement("section");
+  section.className = "section";
+  section.style.marginTop = "30px";
+
+  section.innerHTML = `
+    <h2>📊 Lead Management</h2>
+    <p class="small">Save prospects and manage your sales pipeline.</p>
+
+    <div id="leadStats" style="display:flex;gap:12px;flex-wrap:wrap;margin:20px 0;"></div>
+
+    <div id="savedLeads"></div>
+  `;
+
+  container.appendChild(section);
+
+  function saveLeads() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(leads));
+  }
+
+  function renderLeads() {
+    const stats = document.getElementById("leadStats");
+    const list = document.getElementById("savedLeads");
+
+    const statuses = ["New", "Contacted", "Interested", "Converted"];
+
+    stats.innerHTML = "";
+
+    ["Total", "New", "Contacted", "Interested", "Converted"].forEach(status => {
+      const count = status === "Total"
+        ? leads.length
+        : leads.filter(l => l.status === status).length;
+
+      const box = document.createElement("div");
+      box.style.cssText = "flex:1;min-width:90px;padding:14px;background:#10251c;border-radius:10px;";
+      box.innerHTML = `<strong style="font-size:22px;color:#36d98a">${count}</strong><br><small>${status}</small>`;
+      stats.appendChild(box);
+    });
+
+    list.innerHTML = "";
+
+    if (!leads.length) {
+      list.textContent = "No saved leads yet. Search for businesses and save prospects to begin.";
+      return;
+    }
+
+    leads.forEach((lead, index) => {
+      const card = document.createElement("div");
+      card.style.cssText = "padding:16px;margin:12px 0;background:#10201a;border:1px solid #294638;border-radius:12px;";
+
+      const title = document.createElement("h3");
+      title.textContent = lead.name;
+
+      const details = document.createElement("p");
+      details.textContent = lead.address || "Address not listed";
+
+      const status = document.createElement("select");
+      statuses.forEach(value => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = value;
+        status.appendChild(option);
+      });
+      status.value = lead.status || "New";
+      status.onchange = () => {
+        lead.status = status.value;
+        saveLeads();
+        renderLeads();
+      };
+
+      const notes = document.createElement("textarea");
+      notes.placeholder = "Add notes about this prospect...";
+      notes.value = lead.notes || "";
+      notes.style.cssText = "width:100%;margin:12px 0;";
+
+      notes.onchange = () => {
+        lead.notes = notes.value;
+        saveLeads();
+      };
+
+      const followup = document.createElement("input");
+      followup.type = "date";
+      followup.value = lead.followup || "";
+      followup.style.cssText = "width:100%;margin-bottom:12px;";
+
+      followup.onchange = () => {
+        lead.followup = followup.value;
+        saveLeads();
+      };
+
+      const remove = document.createElement("button");
+      remove.textContent = "Remove Lead";
+      remove.style.background = "#a83232";
+      remove.style.color = "white";
+      remove.onclick = () => {
+        if (confirm("Remove this lead?")) {
+          leads.splice(index, 1);
+          saveLeads();
+          renderLeads();
+        }
+      };
+
+      card.append(title, details, status, notes, followup, remove);
+      list.appendChild(card);
+    });
+  }
+
+  function addSaveButtons() {
+    const result = document.getElementById("researchResult");
+    if (!result) return;
+
+    result.querySelectorAll(":scope > div").forEach(card => {
+      if (card.dataset.leadSaveAdded) return;
+
+      const heading = card.querySelector("h3");
+      if (!heading) return;
+
+      card.dataset.leadSaveAdded = "true";
+
+      const saveButton = document.createElement("button");
+      saveButton.textContent = "＋ Save Lead";
+      saveButton.style.cssText = "width:100%;margin-top:12px;background:#36d98a;color:#06120b;";
+
+      saveButton.onclick = () => {
+        const name = heading.textContent.trim();
+
+        if (leads.some(lead
 </script>
 
 </body>

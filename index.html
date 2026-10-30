@@ -182,47 +182,78 @@ function addMessage(sender, message) {
   messages.scrollTop = messages.scrollHeight;
 }
 async function findLeads() {
+const industry = document.getElementById(“lead-industry”).value.trim();
+const location = document.getElementById(“lead-location”).value.trim();
+const count = document.getElementById(“lead-count”).value;
+const results = document.getElementById(“lead-results”);
+const button = document.querySelector(”#lead-finder button”);
 
-  const industry = document.getElementById("lead-industry").value.trim();
-  const location = document.getElementById("lead-location").value.trim();
-  const count = document.getElementById("lead-count").value;
-  const results = document.getElementById("lead-results");
+if (!industry || !location) {
+results.textContent = “Please enter an industry and location.”;
+return;
+}
 
-  if (!industry || !location) {
-    results.textContent = "Please enter an industry and location.";
-    return;
-  }
+button.disabled = true;
+button.textContent = “Searching…”;
+results.textContent = “SalesPilot is researching your market…”;
 
-  results.textContent = "SalesPilot is preparing your prospecting search...";
+const controller = new AbortController();
+const timeout = setTimeout(() => controller.abort(), 45000);
 
-  try {
+try {
+const response = await fetch(
+“https://salespilot-ai-backend.victoronyekachi070.workers.dev/”,
+{
+method: “POST”,
+headers: {
+“Content-Type”: “application/json”
+},
+body: JSON.stringify({
+message: `Act as a professional B2B sales researcher.
 
-    const response = await fetch(
-      "https://salespilot-ai-backend.victoronyekachi070.workers.dev/",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          message: `Help me find ${count} potential ${industry} customers in ${location}. Give me a practical prospecting plan and reliable sources where I can identify real businesses. Do not invent company names, websites, phone numbers or email addresses.`
-        })
-      }
-    );
+Research request:
+Industry: ${industry}
+Location: ${location}
+Requested leads: ${count}
 
-    const data = await response.json();
+Provide:
 
-    if (!response.ok) {
-      throw new Error(data.error || "Search failed.");
-    }
+1. A prospecting strategy for this market.
+2. The best types of businesses to target.
+3. Search phrases to find genuine businesses.
+4. Reliable directories and public sources.
+5. A simple qualification checklist.
 
-    results.textContent = data.reply;
+IMPORTANT:
+Do not invent company names, websites, phone numbers, addresses or email addresses.
+Clearly distinguish research suggestions from verified business records.
+Format the answer clearly with headings and numbered steps.`
+}),
+signal: controller.signal
+}
+);
 
-  } catch (error) {
+const data = await response.json();
+if (!response.ok) {
+  throw new Error(data.error || "Backend request failed.");
+}
+if (!data.reply) {
+  throw new Error("No AI response was received.");
+}
+results.textContent = data.reply;
 
-    results.textContent = "Error: " + error.message;
+} catch (error) {
+console.error(“Lead Finder error:”, error);
 
-  }
+results.textContent = error.name === "AbortError"
+  ? "The request timed out. Please try again."
+  : "Connection failed: " + error.message;
+
+} finally {
+clearTimeout(timeout);
+button.disabled = false;
+button.textContent = “Find Potential Leads”;
+}
 }
 async function sendMessage() {
 

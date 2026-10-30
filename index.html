@@ -84,4 +84,34 @@ function exportData(){const blob=new Blob([JSON.stringify(data,null,2)],{type:'a
 function clearData(){if(confirm('This permanently deletes leads and drafts saved in this browser. Continue?')){data={leads:[],drafts:[]};persist();toast('Local data cleared')}}
 renderAll();
 </script>
-</body></html>
+<script>
+async function askSalesPilot(message) {
+  try {
+    const response = await fetch(
+      "https://salespilot-ai-backend.victoronyekachi070.workers.dev/",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "AI request failed.");
+    }
+
+    return data.reply;
+
+  } catch (error) {
+    console.error("SalesPilot error:", error);
+    return "Sorry, SalesPilot AI is temporarily unavailable.";
+  }
+}
+</script>
+
+</body>
+</html>

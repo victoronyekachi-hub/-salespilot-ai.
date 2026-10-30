@@ -1149,7 +1149,7 @@ card.appendChild(outreachResult);
     const result = document.getElementById("researchResult");
     if (!result) return;
 
-    Array.from(result.children).filter(card => card.tagName === "DIV").forEach(card => {
+    result.querySelectorAll(":scope > div").forEach(card => {
       if (card.dataset.leadSaveAdded) return;
 
       const heading = card.querySelector("h3");
@@ -1164,7 +1164,45 @@ card.appendChild(outreachResult);
       saveButton.onclick = () => {
         const name = heading.textContent.trim();
 
-        if (leads.some(lead
+        if (leads.some(lead => lead.name === name)) {
+          alert("This business is already saved.");
+          return;
+        }
+
+        const paragraphs = card.querySelectorAll("p");
+        const address = paragraphs.length
+          ? paragraphs[0].textContent
+          : "";
+
+        leads.push({
+          name,
+          address,
+          status: "New",
+          notes: "",
+          followup: ""
+        });
+
+        saveLeads();
+        renderLeads();
+        saveButton.textContent = "✓ Lead Saved";
+      };
+
+      card.appendChild(saveButton);
+    });
+  }
+
+  const result = document.getElementById("researchResult");
+
+  if (result) {
+    new MutationObserver(addSaveButtons).observe(result, {
+      childList: true,
+      subtree: true
+    });
+  }
+
+  renderLeads();
+  addSaveButtons();
+})();
 </script>
 
 </body>

@@ -1680,6 +1680,13 @@ function renderCampaigns(){
 
     const details=document.createElement("p");
     details.textContent=
+    const status=document.createElement("span");
+status.textContent=campaign.status||"Active";
+status.style.cssText=
+  "display:inline-block;padding:6px 12px;border-radius:20px;background:"+
+  (campaign.status==="Paused"?"#49351d":"#173d2b")+
+  ";color:"+(campaign.status==="Paused"?"#ffc66d":"#55d995")+
+  ";font-size:12px;margin-top:8px;";
       campaign.industry+" · "+campaign.location+" · "+campaign.goal;
 
     const stats=document.createElement("div");
@@ -1709,24 +1716,40 @@ function renderCampaigns(){
       stats.appendChild(box);
     });
 
-    const remove=document.createElement("button");
-    remove.className="btn danger small";
-    remove.textContent="Delete Campaign";
+    const pause=document.createElement("button");
+pause.className="btn small";
+pause.textContent=campaign.status==="Paused"?"▶ Resume Campaign":"⏸ Pause Campaign";
 
-    remove.onclick=()=>{
+pause.onclick=()=>{
+  const updated=getSalesPilotCampaigns().map(c=>
+    c.id===campaign.id
+      ? {...c,status:c.status==="Paused"?"Active":"Paused"}
+      : c
+  );
 
-      if(!confirm("Delete this campaign?"))return;
+  saveSalesPilotCampaigns(updated);
+  renderCampaigns();
+  toast("Campaign status updated.");
+};
 
-      const updated=getSalesPilotCampaigns()
-        .filter(c=>c.id!==campaign.id);
+const remove=document.createElement("button");
+remove.className="btn danger small";
+remove.textContent="Delete Campaign";
 
-      saveSalesPilotCampaigns(updated);
-      renderCampaigns();
+remove.onclick=()=>{
+  if(!confirm("Delete this campaign?"))return;
 
-      toast("Campaign deleted.");
-    };
+  const updated=getSalesPilotCampaigns()
+    .filter(c=>c.id!==campaign.id);
 
-    card.append(title,details,stats,remove);
+  saveSalesPilotCampaigns(updated);
+  renderCampaigns();
+  toast("Campaign deleted.");
+};
+const date=document.createElement("p");
+date.style.cssText="color:#9aaa9f;font-size:12px;margin-top:10px;";
+date.textContent="Created: "+new Date(campaign.createdAt).toLocaleDateString();
+card.append(title,details,status,date,stats,pause,remove);
     container.appendChild(card);
 
   });

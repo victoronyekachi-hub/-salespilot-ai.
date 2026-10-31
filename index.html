@@ -1694,11 +1694,11 @@ status.style.cssText=
       "display:flex;gap:20px;flex-wrap:wrap;margin-top:18px;";
 
     [
-      ["Matching Leads",matches.length],
-      ["Contacted",contacted],
-      ["Won",won]
-      ["Conversion",matches.length?Math.round((won/matches.length)*100)+"%":"0%"]
-    ].forEach(item=>{
+  ["Matching Leads",matches.length],
+  ["Contacted",contacted],
+  ["Won",won],
+  ["Conversion",matches.length?Math.round((won/matches.length)*100)+"%":"0%"]
+].forEach(item=>{
 
       const box=document.createElement("div");
       box.style.cssText=

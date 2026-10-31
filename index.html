@@ -852,7 +852,7 @@ async function analyzeWebsite(){
   button.disabled=true;
   button.textContent="✦ Analysing Website...";
 
-  output.innerHTML='<div class="card empty">AI is examining the website. Please wait...</div>';
+  output.innerHTML='<div class="card empty">Analysing website. Please wait...</div>';
 
   try{
 
@@ -863,44 +863,59 @@ async function analyzeWebsite(){
     },60000);
 
     if(!data.success){
-      throw new Error(data.error||"Website analysis failed.");
+      throw new Error(data.error||"Analysis failed.");
     }
+
+    window.latestWebsiteAnalysis=data.analysis||"";
 
     output.innerHTML="";
 
-    const result=document.createElement("div");
-    result.className="card";
+    const card=document.createElement("div");
+    card.className="card";
+    card.style.padding="25px";
+    card.style.border="1px solid #3b7654";
+    card.style.borderRadius="16px";
 
-    const heading=document.createElement("h3");
-    heading.textContent="✦ AI Website Analysis";
+    card.innerHTML=`
+      <div style="color:#55d995;font-size:12px;font-weight:700;letter-spacing:2px">
+        SALES INTELLIGENCE REPORT
+      </div>
+      <h2 style="margin:15px 0 8px">✦ Website Opportunity Analysis</h2>
+      <p style="color:#a5b5aa">${businessName||"Business Website"}</p>
+      <p style="font-size:13px;overflow-wrap:anywhere">${data.website}</p>
+      <div style="margin-top:20px;padding:16px;background:#18251e;border-radius:12px">
+        <strong>Website Title</strong>
+        <p id="websitePageTitle"></p>
+      </div>
+      <div style="margin-top:20px">
+        <strong style="color:#55d995">AI Analysis</strong>
+        <div id="websiteAnalysisText" style="white-space:pre-wrap;line-height:1.8;margin-top:12px"></div>
+      </div>
+    `;
 
-    const website=document.createElement("p");
-    website.textContent="Website: "+data.website;
+card.querySelector("#websitePageTitle").textContent =
+  data.title || "Not found";
+  
+    card.querySelector("#websiteAnalysisText").textContent=
+      data.analysis||"No analysis returned.";
 
-    const title=document.createElement("p");
-    title.textContent="Page title: "+(data.title||"Not found");
+    const outreachButton=document.createElement("button");
+    outreachButton.type="button";
+    outreachButton.className="btn primary";
+    outreachButton.textContent="✦ Generate Personalized Outreach";
+    outreachButton.style.cssText=
+      "display:flex!important;width:100%;justify-content:center;margin-top:25px;padding:16px;visibility:visible;opacity:1;";
 
-    const analysis=document.createElement("div");
-    analysis.style.whiteSpace="pre-wrap";
-    analysis.style.lineHeight="1.8";
-    analysis.style.marginTop="18px";
-    analysis.textContent=data.analysis||"No analysis returned.";
+    outreachButton.addEventListener("click",()=>{
+      generateWebsiteOutreach(outreachButton);
+    });
 
-    result.append(heading,website,title,analysis);
-    output.appendChild(result);
-window.latestWebsiteAnalysis = data.analysis || "";
+    card.appendChild(outreachButton);
+    output.appendChild(card);
 
-const outreachButton = document.createElement("button");
-outreachButton.className = "btn primary";
-outreachButton.textContent = "✦ Generate Personalized Outreach";
-outreachButton.style.marginTop = "15px";
-outreachButton.onclick = generateWebsiteOutreach;
-
-output.appendChild(outreachButton);
   }catch(error){
 
     output.innerHTML="";
-
     const message=document.createElement("div");
     message.className="card empty";
     message.textContent="Analysis failed: "+error.message;

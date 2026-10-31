@@ -928,7 +928,7 @@ card.querySelector("#websitePageTitle").textContent =
 
   }
 }
-async function generateWebsiteOutreach(){
+async function generateWebsiteOutreach(triggerButton){
 
   const name=document.getElementById("analyzeBusiness").value.trim();
   const url=document.getElementById("analyzeURL").value.trim();
@@ -939,17 +939,18 @@ async function generateWebsiteOutreach(){
     return;
   }
 
-  const button=event.currentTarget;
-  button.disabled=true;
-  button.textContent="Generating outreach...";
+  const button=triggerButton;
+  if(button){
+    button.disabled=true;
+    button.textContent="Generating outreach...";
+  }
 
   try{
 
     const prompt=`
 You are an expert B2B sales copywriter.
 
-Write a personalized, professional cold outreach email
-for a web design agency contacting this business.
+Create a personalized cold email for a web design agency.
 
 Business: ${name||"Business"}
 Website: ${url}
@@ -957,15 +958,20 @@ Website: ${url}
 Website analysis:
 ${analysis}
 
-Include:
-1. A compelling subject line.
-2. A personalized opening.
-3. Specific improvement opportunities.
-4. A professional website redesign proposal.
-5. A friendly call to action.
+Write a natural, professional and persuasive email.
 
-Keep it natural, concise and persuasive.
-Do not invent facts or claim to have contacted the business.
+Use this EXACT format:
+
+SUBJECT: [Email subject]
+
+BODY:
+[Complete email body]
+
+Include a personalized opening, relevant website improvements,
+a redesign proposal and a friendly call to action.
+
+Do not invent business facts.
+Do not include explanations outside this format.
 `;
 
     const data=await apiPost({message:prompt},60000);
@@ -974,41 +980,145 @@ Do not invent facts or claim to have contacted the business.
       throw new Error("No outreach generated.");
     }
 
-    const card=document.createElement("div");
-    card.className="card";
-    card.style.marginTop="18px";
+    const reply=data.reply.trim();
 
-    const heading=document.createElement("h3");
-    heading.textContent="✦ Personalized Sales Outreach";
+    const subjectMatch=reply.match(/SUBJECT:\s*(.+)/i);
+    const bodyMatch=reply.match(/BODY:\s*([\s\S]*)/i);
 
-    const content=document.createElement("div");
-    content.style.whiteSpace="pre-wrap";
-    content.style.lineHeight="1.8";
-    content.textContent=data.reply;
+    const subject=subjectMatch
+      ?subjectMatch[1].trim()
+      :"Website improvement opportunity";
 
-    const copy=document.createElement("button");
-    copy.className="btn secondary";
-    copy.textContent="Copy Email";
-    copy.style.marginTop="15px";
+    const body=bodyMatch
+      ?bodyMatch[1].trim()
+      :reply;
 
-    copy.onclick=async()=>{
+    window.latestOutreach={subject,body,name,url};
+
+    let workspace=document.getElementById("outreachWorkspace");
+
+    if(workspace) workspace.remove();
+
+    workspace=document.createElement("div");
+    workspace.id="outreachWorkspace";
+    workspace.className="card";
+    workspace.style.cssText=
+      "margin-top:22px;padding:24px;border:1px solid #3b7654;border-radius:16px;";
+
+    const heading=document.createElement("h2");
+    heading.textContent="✦ Outreach Workspace";
+
+    const subtitle=document.createElement("p");
+    subtitle.textContent="Your AI-generated sales campaign is ready.";
+    subtitle.style.color="#9aaa9f";
+
+    const subjectLabel=document.createElement("label");
+    subjectLabel.textContent="EMAIL SUBJECT";
+
+    const subjectField=document.createElement("input");
+    subjectField.className="field";
+    subjectField.value=subject;
+
+    const bodyLabel=document.createElement("label");
+    bodyLabel.textContent="EMAIL MESSAGE";
+    bodyLabel.style.display="block";
+    bodyLabel.style.marginTop="18px";
+
+    const bodyField=document.createElement("textarea");
+    bodyField.className="field";
+    bodyField.value=body;
+    bodyField.style.cssText=
+      "width:100%;min-height:230px;resize:vertical;line-height:1.7;padding:15px;";
+
+    function makeButton(label,action){
+      const b=document.createElement("button");
+      b.type="button";
+      b.className="btn secondary small";
+      b.textContent=label;
+      b.style.margin="8px 8px 0 0";
+      b.onclick=action;
+      return b;
+    }
+
+    const copySubject=makeButton("Copy Subject",async()=>{
       try{
-        await navigator.clipboard.writeText(data.reply);
-        toast("Email copied!");
+        await navigator.clipboard.writeText(subjectField.value);
+        toast("Subject copied!");
       }catch(error){
-        toast("Copy unavailable on this browser.");
+        toast("Copy unavailable.");
       }
-    };
+    });
 
-    card.append(heading,content,copy);
+    const copyEmail=makeButton("Copy Email",async()=>{
+      try{
+        await navigator.clipboard.writeText(
+          "Subject: "+subjectField.value+"\n\n"+bodyField.value
+        );
+        toast("Complete email copied!");
+      }catch(error){
+        toast("Copy unavailable.");
+      }
+    });
 
-    document.getElementById("websiteAnalysisResult").appendChild(card);
+    const regenerate=makeButton("↻ Regenerate Outreach",()=>{
+      generateWebsiteOutreach(regenerate);
+    });
+
+    regenerate.className="btn primary small";
+
+    const save=makeButton("＋ Save Outreach to Lead",()=>{
+
+      if(typeof leads==="undefined"||!Array.isArray(leads)){
+        toast("Lead storage is unavailable.");
+        return;
+      }
+
+      const lead=leads.find(item=>
+        (item.name||"").toLowerCase()===name.toLowerCase()
+      );
+
+      if(!lead){
+        toast("Save this business as a lead first.");
+        return;
+      }
+
+      lead.outreachSubject=subjectField.value;
+      lead.outreachBody=bodyField.value;
+
+      if(typeof saveLeads==="function") saveLeads();
+      if(typeof renderLeads==="function") renderLeads();
+
+      toast("Outreach saved to Lead Management!");
+    });
+
+    workspace.append(
+      heading,
+      subtitle,
+      subjectLabel,
+      subjectField,
+      bodyLabel,
+      bodyField,
+      copySubject,
+      copyEmail,
+      regenerate,
+      save
+    );
+
+    document.getElementById("websiteAnalysisResult").appendChild(workspace);
+
+    workspace.scrollIntoView({behavior:"smooth",block:"start"});
 
   }catch(error){
+
     toast("Outreach failed: "+error.message);
+
   }finally{
-    button.disabled=false;
-    button.textContent="✦ Generate Personalized Outreach";
+
+    if(button){
+      button.disabled=false;
+      button.textContent="✦ Generate Personalized Outreach";
+    }
+
   }
 }
 function saveLead(business){

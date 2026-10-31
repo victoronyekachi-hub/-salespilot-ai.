@@ -1697,6 +1697,7 @@ status.style.cssText=
       ["Matching Leads",matches.length],
       ["Contacted",contacted],
       ["Won",won]
+      ["Conversion",matches.length?Math.round((won/matches.length)*100)+"%":"0%"]
     ].forEach(item=>{
 
       const box=document.createElement("div");

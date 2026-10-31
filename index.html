@@ -495,6 +495,9 @@ textarea.field{min-height:90px;resize:vertical}
   <nav class="nav">
     <button class="active" onclick="go('dashboard',this)"><span class="nav-icon">⌂</span>Dashboard</button>
     <button onclick="go('finder',this)"><span class="nav-icon">⌕</span>Lead Finder</button>
+    <button onclick="go('websiteAnalyzer',this)">
+  <span class="nav-icon">✦</span>Website Analyzer
+</button>
     <button onclick="go('leads',this)"><span class="nav-icon">♧</span>Lead Manager</button>
     <button onclick="go('pipeline',this)"><span class="nav-icon">▥</span>Sales Pipeline</button>
     <button onclick="go('assistant',this)"><span class="nav-icon">✧</span>AI Assistant</button>
@@ -594,7 +597,36 @@ textarea.field{min-height:90px;resize:vertical}
   </div>
   <div class="result" id="researchResult"></div>
 </section>
+<section id="websiteAnalyzer">
+  <div class="section-title">
+    <div>
+      <h2>✦ AI Website Analyzer</h2>
+      <p>Discover website weaknesses and turn them into sales opportunities.</p>
+    </div>
+  </div>
 
+  <div class="card">
+    <div class="logo">SALES INTELLIGENCE</div>
+
+    <h3>Analyse a Business Website</h3>
+    <p>Let AI examine the available website content and uncover opportunities.</p>
+
+    <label>Business Name</label>
+    <input class="field" id="analyzeBusiness"
+      placeholder="e.g. Bright Dental Clinic">
+
+    <label>Website URL (HTTPS)</label>
+    <input class="field" id="analyzeURL"
+      type="url" placeholder="https://example.com">
+
+    <button class="btn primary" id="analyzeButton"
+      onclick="analyzeWebsite()">
+      ✦ Analyse Website
+    </button>
+
+    <div id="websiteAnalysisResult" class="result"></div>
+  </div>
+</section>
 <section id="leads">
   <div class="section-title">
     <div><h2>Lead Management</h2><p>Manage your prospects and track every opportunity.</p></div>
@@ -805,7 +837,74 @@ async function findBusinesses(){
     button.textContent="⌕ Discover Businesses";
   }
 }
+async function analyzeWebsite(){
 
+  const businessName=document.getElementById("analyzeBusiness").value.trim();
+  const url=document.getElementById("analyzeURL").value.trim();
+  const button=document.getElementById("analyzeButton");
+  const output=document.getElementById("websiteAnalysisResult");
+
+  if(!url){
+    toast("Enter a website URL first.");
+    return;
+  }
+
+  button.disabled=true;
+  button.textContent="✦ Analysing Website...";
+
+  output.innerHTML='<div class="card empty">AI is examining the website. Please wait...</div>';
+
+  try{
+
+    const data=await apiPost({
+      action:"analyzeWebsite",
+      businessName,
+      url
+    },60000);
+
+    if(!data.success){
+      throw new Error(data.error||"Website analysis failed.");
+    }
+
+    output.innerHTML="";
+
+    const result=document.createElement("div");
+    result.className="card";
+
+    const heading=document.createElement("h3");
+    heading.textContent="✦ AI Website Analysis";
+
+    const website=document.createElement("p");
+    website.textContent="Website: "+data.website;
+
+    const title=document.createElement("p");
+    title.textContent="Page title: "+(data.title||"Not found");
+
+    const analysis=document.createElement("div");
+    analysis.style.whiteSpace="pre-wrap";
+    analysis.style.lineHeight="1.8";
+    analysis.style.marginTop="18px";
+    analysis.textContent=data.analysis||"No analysis returned.";
+
+    result.append(heading,website,title,analysis);
+    output.appendChild(result);
+
+  }catch(error){
+
+    output.innerHTML="";
+
+    const message=document.createElement("div");
+    message.className="card empty";
+    message.textContent="Analysis failed: "+error.message;
+    output.appendChild(message);
+
+  }finally{
+
+    button.disabled=false;
+    button.textContent="✦ Analyse Website";
+
+  }
+}
 function saveLead(business){
   const exists=leads.some(l=>
     l.name.toLowerCase()===String(business.name).toLowerCase() &&

@@ -503,6 +503,10 @@ textarea.field{min-height:90px;resize:vertical}
     <button onclick="go('assistant',this)"><span class="nav-icon">✧</span>AI Assistant</button>
     <button onclick="go('analytics',this)"><span class="nav-icon">◷</span>Analytics</button>
   </nav>
+<button onclick="go('campaigns',this)">
+  <span class="nav-icon">🚀</span>
+  Campaign Manager
+</button>
 
   <div class="sidebar-bottom">
     <strong>✦ SalesPilot AI</strong>
@@ -645,6 +649,54 @@ textarea.field{min-height:90px;resize:vertical}
     </div>
     <div id="leadList"></div>
   </div>
+</section>
+<section id="campaigns">
+
+  <div class="section-title">
+    <div>
+      <h2>🚀 Campaign Manager</h2>
+      <p>Create, organize and monitor your sales campaigns.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Create New Campaign</h3>
+
+    <label>Campaign Name</label>
+    <input class="field" id="campaignName"
+      placeholder="e.g. Abuja Restaurant Outreach">
+
+    <label>Target Industry</label>
+    <input class="field" id="campaignIndustry"
+      placeholder="e.g. Restaurants">
+
+    <label>Target Location</label>
+    <input class="field" id="campaignLocation"
+      placeholder="e.g. Abuja, Nigeria">
+
+    <label>Campaign Goal</label>
+    <select class="field" id="campaignGoal">
+      <option>Website Redesign</option>
+      <option>New Website Development</option>
+      <option>Website Maintenance</option>
+      <option>General Business Outreach</option>
+    </select>
+
+    <button class="btn primary"
+      onclick="createCampaign()">
+      ＋ Create Campaign
+    </button>
+  </div>
+
+  <div class="section-title">
+    <div>
+      <h2>Your Campaigns</h2>
+      <p>Track your sales activities.</p>
+    </div>
+  </div>
+
+  <div id="campaignList"></div>
+
 </section>
 
 <section id="pipeline">
@@ -1533,6 +1585,152 @@ Return the subject and email body clearly separated.
 
   }
 }
+function getSalesPilotCampaigns(){
+  try{
+    return JSON.parse(localStorage.getItem("salespilot_campaigns")||"[]");
+  }catch(error){
+    return [];
+  }
+}
+
+function saveSalesPilotCampaigns(campaigns){
+  localStorage.setItem(
+    "salespilot_campaigns",
+    JSON.stringify(campaigns)
+  );
+}
+
+function createCampaign(){
+
+  const name=document.getElementById("campaignName").value.trim();
+  const industry=document.getElementById("campaignIndustry").value.trim();
+  const location=document.getElementById("campaignLocation").value.trim();
+  const goal=document.getElementById("campaignGoal").value;
+
+  if(!name||!industry||!location){
+    toast("Complete all campaign details first.");
+    return;
+  }
+
+  const campaigns=getSalesPilotCampaigns();
+
+  campaigns.unshift({
+    id:Date.now(),
+    name,
+    industry,
+    location,
+    goal,
+    createdAt:new Date().toISOString()
+  });
+
+  saveSalesPilotCampaigns(campaigns);
+
+  document.getElementById("campaignName").value="";
+  document.getElementById("campaignIndustry").value="";
+  document.getElementById("campaignLocation").value="";
+
+  renderCampaigns();
+
+  toast("Campaign created successfully!");
+}
+
+function renderCampaigns(){
+
+  const container=document.getElementById("campaignList");
+
+  if(!container)return;
+
+  container.innerHTML="";
+
+  const campaigns=getSalesPilotCampaigns();
+
+  if(!campaigns.length){
+    container.innerHTML=
+      '<div class="card empty">No campaigns yet. Create your first sales campaign.</div>';
+    return;
+  }
+
+  campaigns.forEach(campaign=>{
+
+    const matches=leads.filter(lead=>{
+
+      const industryMatch=(lead.category||"")
+        .toLowerCase()
+        .includes(campaign.industry.toLowerCase());
+
+      const locationMatch=(lead.address||"")
+        .toLowerCase()
+        .includes(campaign.location.toLowerCase());
+
+      return industryMatch&&locationMatch;
+    });
+
+    const contacted=matches.filter(l=>
+      ["Contacted","Interested","Negotiation","Won"].includes(l.status)
+    ).length;
+
+    const won=matches.filter(l=>l.status==="Won").length;
+
+    const card=document.createElement("div");
+    card.className="card";
+    card.style.marginBottom="15px";
+
+    const title=document.createElement("h3");
+    title.textContent="🚀 "+campaign.name;
+
+    const details=document.createElement("p");
+    details.textContent=
+      campaign.industry+" · "+campaign.location+" · "+campaign.goal;
+
+    const stats=document.createElement("div");
+    stats.style.cssText=
+      "display:flex;gap:20px;flex-wrap:wrap;margin-top:18px;";
+
+    [
+      ["Matching Leads",matches.length],
+      ["Contacted",contacted],
+      ["Won",won]
+    ].forEach(item=>{
+
+      const box=document.createElement("div");
+      box.style.cssText=
+        "padding:14px;background:#18251e;border-radius:12px;flex:1;min-width:90px;";
+
+      const label=document.createElement("div");
+      label.style.color="#9aaa9f";
+      label.style.fontSize="12px";
+      label.textContent=item[0];
+
+      const number=document.createElement("h2");
+      number.style.color="#55d995";
+      number.textContent=item[1];
+
+      box.append(label,number);
+      stats.appendChild(box);
+    });
+
+    const remove=document.createElement("button");
+    remove.className="btn danger small";
+    remove.textContent="Delete Campaign";
+
+    remove.onclick=()=>{
+
+      if(!confirm("Delete this campaign?"))return;
+
+      const updated=getSalesPilotCampaigns()
+        .filter(c=>c.id!==campaign.id);
+
+      saveSalesPilotCampaigns(updated);
+      renderCampaigns();
+
+      toast("Campaign deleted.");
+    };
+
+    card.append(title,details,stats,remove);
+    container.appendChild(card);
+
+  });
+}
 
 function renderPipeline(){
   const board=document.getElementById("pipelineBoard");
@@ -1645,6 +1843,7 @@ function refresh(){
 }
 
 refresh();
+window.addEventListener("DOMContentLoaded",renderCampaigns);
 </script>
 </body>
 </html>

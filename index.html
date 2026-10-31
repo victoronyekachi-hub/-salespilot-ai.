@@ -1390,8 +1390,148 @@ If information is insufficient, explain the uncertainty.
     followLabel.textContent="Follow-up date";
     followLabel.style.gridColumn="1/-1";
 
-    list.append(row,analysis,notes,followLabel,followup);
+    const tone=document.createElement("select");
+tone.className="field";
+tone.style.gridColumn="1/-1";
+
+[
+  ["Professional","Professional"],
+  ["Friendly","Friendly"],
+  ["Direct","Direct"]
+].forEach(item=>{
+  const option=document.createElement("option");
+  option.value=item[0];
+  option.textContent=item[1]+" follow-up";
+  tone.appendChild(option);
+});
+
+const followButton=document.createElement("button");
+followButton.className="btn primary small";
+followButton.textContent="✦ Generate AI Follow-Up";
+followButton.style.gridColumn="1/-1";
+
+const followResult=document.createElement("div");
+followResult.style.gridColumn="1/-1";
+
+followButton.onclick=()=>{
+  generateLeadFollowup(lead,tone.value,followButton,followResult);
+};
+
+list.append(
+  row,
+  analysis,
+  notes,
+  followLabel,
+  followup,
+  tone,
+  followButton,
+  followResult
+);
   });
+}
+async function generateLeadFollowup(lead,tone,button,output){
+
+  button.disabled=true;
+  button.textContent="✦ Generating Follow-Up...";
+
+  output.innerHTML='<div class="card empty">AI is preparing your follow-up...</div>';
+
+  const prompt=`
+You are an expert B2B sales follow-up specialist.
+
+Write a ${tone.toLowerCase()} follow-up email for a web design agency.
+
+Business: ${lead.name}
+Website: ${lead.website||"Not provided"}
+Category: ${lead.category||"Not provided"}
+Previous outreach subject: ${lead.outreachSubject||"Not available"}
+Previous outreach: ${lead.outreachBody||"Not available"}
+Lead status: ${lead.status||"New"}
+
+Create a natural, professional follow-up email.
+
+Include:
+1. A suitable email subject.
+2. A polite opening.
+3. A brief reminder of the previous offer.
+4. A compelling reason to respond.
+5. A clear but friendly call to action.
+
+Do not invent previous conversations or claim the business replied.
+
+Return the subject and email body clearly separated.
+`;
+
+  try{
+
+    const data=await apiPost({message:prompt},60000);
+
+    if(!data.reply){
+      throw new Error("No follow-up was generated.");
+    }
+
+    const card=document.createElement("div");
+    card.className="card";
+    card.style.marginTop="15px";
+
+    const heading=document.createElement("h3");
+    heading.textContent="✦ AI Follow-Up Email";
+
+    const message=document.createElement("textarea");
+    message.className="field";
+    message.style.cssText="width:100%;min-height:220px;line-height:1.7;";
+    message.value=data.reply;
+
+    const copy=document.createElement("button");
+    copy.className="btn secondary small";
+    copy.textContent="Copy Follow-Up";
+
+    copy.onclick=async()=>{
+      try{
+        await navigator.clipboard.writeText(message.value);
+        toast("Follow-up copied!");
+      }catch(error){
+        toast("Copy unavailable.");
+      }
+    };
+
+    const save=document.createElement("button");
+    save.className="btn primary small";
+    save.textContent="Save Follow-Up";
+
+    save.onclick=()=>{
+      lead.followupEmail=message.value;
+      lead.followupTone=tone;
+
+      if(!Array.isArray(lead.followupHistory)){
+        lead.followupHistory=[];
+      }
+
+      lead.followupHistory.push({
+        email:message.value,
+        tone:tone,
+        date:new Date().toISOString()
+      });
+
+      saveLeads();
+      toast("Follow-up saved to this lead!");
+    };
+
+    card.append(heading,message,copy,save);
+
+    output.innerHTML="";
+    output.appendChild(card);
+
+  }catch(error){
+
+    output.textContent="Follow-up failed: "+error.message;
+
+  }finally{
+
+    button.disabled=false;
+    button.textContent="✦ Generate AI Follow-Up";
+
+  }
 }
 
 function renderPipeline(){

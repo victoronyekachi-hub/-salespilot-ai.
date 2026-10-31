@@ -888,7 +888,15 @@ async function analyzeWebsite(){
 
     result.append(heading,website,title,analysis);
     output.appendChild(result);
+window.latestWebsiteAnalysis = data.analysis || "";
 
+const outreachButton = document.createElement("button");
+outreachButton.className = "btn primary";
+outreachButton.textContent = "✦ Generate Personalized Outreach";
+outreachButton.style.marginTop = "15px";
+outreachButton.onclick = generateWebsiteOutreach;
+
+output.appendChild(outreachButton);
   }catch(error){
 
     output.innerHTML="";
@@ -903,6 +911,89 @@ async function analyzeWebsite(){
     button.disabled=false;
     button.textContent="✦ Analyse Website";
 
+  }
+}
+async function generateWebsiteOutreach(){
+
+  const name=document.getElementById("analyzeBusiness").value.trim();
+  const url=document.getElementById("analyzeURL").value.trim();
+  const analysis=window.latestWebsiteAnalysis;
+
+  if(!analysis){
+    toast("Analyse a website first.");
+    return;
+  }
+
+  const button=event.currentTarget;
+  button.disabled=true;
+  button.textContent="Generating outreach...";
+
+  try{
+
+    const prompt=`
+You are an expert B2B sales copywriter.
+
+Write a personalized, professional cold outreach email
+for a web design agency contacting this business.
+
+Business: ${name||"Business"}
+Website: ${url}
+
+Website analysis:
+${analysis}
+
+Include:
+1. A compelling subject line.
+2. A personalized opening.
+3. Specific improvement opportunities.
+4. A professional website redesign proposal.
+5. A friendly call to action.
+
+Keep it natural, concise and persuasive.
+Do not invent facts or claim to have contacted the business.
+`;
+
+    const data=await apiPost({message:prompt},60000);
+
+    if(!data.reply){
+      throw new Error("No outreach generated.");
+    }
+
+    const card=document.createElement("div");
+    card.className="card";
+    card.style.marginTop="18px";
+
+    const heading=document.createElement("h3");
+    heading.textContent="✦ Personalized Sales Outreach";
+
+    const content=document.createElement("div");
+    content.style.whiteSpace="pre-wrap";
+    content.style.lineHeight="1.8";
+    content.textContent=data.reply;
+
+    const copy=document.createElement("button");
+    copy.className="btn secondary";
+    copy.textContent="Copy Email";
+    copy.style.marginTop="15px";
+
+    copy.onclick=async()=>{
+      try{
+        await navigator.clipboard.writeText(data.reply);
+        toast("Email copied!");
+      }catch(error){
+        toast("Copy unavailable on this browser.");
+      }
+    };
+
+    card.append(heading,content,copy);
+
+    document.getElementById("websiteAnalysisResult").appendChild(card);
+
+  }catch(error){
+    toast("Outreach failed: "+error.message);
+  }finally{
+    button.disabled=false;
+    button.textContent="✦ Generate Personalized Outreach";
   }
 }
 function saveLead(business){

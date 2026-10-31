@@ -881,6 +881,7 @@ function renderLeads(){
   const filter=document.getElementById("statusFilter").value;
 
   list.innerHTML="";
+
   const filtered=leads.filter(l=>{
     const matches=(l.name+" "+l.address+" "+l.category).toLowerCase().includes(search);
     return matches&&(!filter||l.status===filter);
@@ -896,12 +897,15 @@ function renderLeads(){
     row.className="lead-row";
 
     const info=document.createElement("div");
+
     const name=document.createElement("div");
     name.className="lead-name";
     name.textContent=lead.name;
+
     const sub=document.createElement("div");
     sub.className="lead-sub";
     sub.textContent=lead.address||lead.category||"Saved prospect";
+
     info.append(name,sub);
 
     const value=document.createElement("input");
@@ -911,21 +915,31 @@ function renderLeads(){
     value.min="0";
     value.placeholder="Deal value ($)";
     value.value=lead.dealValue||"";
-    value.onchange=()=>{lead.dealValue=Number(value.value)||0;saveLeads()};
+    value.onchange=()=>{
+      lead.dealValue=Number(value.value)||0;
+      saveLeads();
+    };
 
     const status=document.createElement("select");
     status.className="status";
+
     statuses.forEach(s=>{
       const option=document.createElement("option");
-      option.value=s;option.textContent=s;
+      option.value=s;
+      option.textContent=s;
       status.appendChild(option);
     });
+
     status.value=lead.status||"New";
-    status.onchange=()=>{lead.status=status.value;saveLeads()};
+    status.onchange=()=>{
+      lead.status=status.value;
+      saveLeads();
+    };
 
     const remove=document.createElement("button");
     remove.className="btn danger small";
     remove.textContent="Remove";
+
     remove.onclick=()=>{
       if(confirm("Remove this lead?")){
         leads=leads.filter(l=>l.id!==lead.id);
@@ -933,7 +947,108 @@ function renderLeads(){
       }
     };
 
-    row.append(info,value,status,remove);
+    const scoreButton=document.createElement("button");
+    scoreButton.className="btn primary small";
+    scoreButton.textContent="✦ Score with AI";
+
+    const analysis=document.createElement("div");
+    analysis.style.gridColumn="1/-1";
+    analysis.style.padding="12px";
+    analysis.style.border="1px solid var(--line)";
+    analysis.style.borderRadius="12px";
+    analysis.style.background="#111a15";
+    analysis.style.fontSize="13px";
+
+    if(lead.aiScore!==undefined){
+      analysis.innerHTML=
+        "<strong>AI Lead Score: "+lead.aiScore+"/100</strong><br>"+
+        "<strong>Potential: </strong>"+lead.aiPotential+
+        "<br><strong>Recommendation: </strong>"+
+        lead.aiRecommendation;
+    }else{
+      analysis.textContent="No AI assessment yet. Score this prospect to see its potential.";
+    }
+
+    scoreButton.onclick=async()=>{
+      scoreButton.disabled=true;
+      scoreButton.textContent="Analysing...";
+
+      analysis.textContent="AI is evaluating this prospect...";
+
+      const prompt=`
+Evaluate this potential web design client.
+
+Business: ${lead.name}
+Address: ${lead.address||"Not provided"}
+Category: ${lead.category||"Not provided"}
+Website: ${lead.website||"Not provided"}
+Phone: ${lead.phone||"Not provided"}
+
+Evaluate its potential as a web design client.
+
+Only use the information provided. Do not claim you visited or analysed its website.
+
+Return ONLY valid JSON in this format:
+{
+ "score": 75,
+ "potential": "High",
+ "reason": "Short explanation",
+ "recommendation": "Recommended sales approach"
+}
+
+Score from 0 to 100.
+Potential must be High, Medium or Low.
+If information is insufficient, explain the uncertainty.
+`;
+
+      try{
+        const response=await fetch(API_URL,{
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({message:prompt})
+        });
+
+        const data=await response.json();
+
+        if(!response.ok){
+          throw new Error(data.error||"AI request failed.");
+        }
+
+        const reply=data.reply||data.response||"";
+
+        const start=reply.indexOf("{");
+        const end=reply.lastIndexOf("}");
+
+        if(start===-1||end===-1){
+          throw new Error("AI returned an unexpected response. Try again.");
+        }
+
+        const result=JSON.parse(reply.substring(start,end+1));
+
+        lead.aiScore=Math.max(0,Math.min(100,Number(result.score)||0));
+        lead.aiPotential=result.potential||"Unknown";
+        lead.aiReason=result.reason||"No explanation provided.";
+        lead.aiRecommendation=result.recommendation||"Review this prospect.";
+
+        saveLeads();
+
+        analysis.innerHTML=
+          "<strong>✦ AI Lead Score: "+lead.aiScore+"/100</strong><br>"+
+          "<strong>Conversion Potential: </strong>"+lead.aiPotential+
+          "<br><strong>Assessment: </strong>"+lead.aiReason+
+          "<br><strong>Sales Strategy: </strong>"+lead.aiRecommendation;
+
+        scoreButton.textContent="✓ Analysis Complete";
+
+      }catch(error){
+        analysis.textContent="AI Error: "+error.message;
+        scoreButton.textContent="Try Again";
+      }
+
+      scoreButton.disabled=false;
+    };
+
+    row.append(info,value,status,remove,scoreButton);
 
     const notes=document.createElement("textarea");
     notes.className="field";
@@ -941,20 +1056,26 @@ function renderLeads(){
     notes.value=lead.notes||"";
     notes.style.gridColumn="1/-1";
     notes.style.minHeight="55px";
-    notes.onchange=()=>{lead.notes=notes.value;saveLeads()};
+    notes.onchange=()=>{
+      lead.notes=notes.value;
+      saveLeads();
+    };
 
     const followup=document.createElement("input");
     followup.className="field";
     followup.type="date";
     followup.value=lead.followup||"";
     followup.style.gridColumn="1/-1";
-    followup.onchange=()=>{lead.followup=followup.value;saveLeads()};
+    followup.onchange=()=>{
+      lead.followup=followup.value;
+      saveLeads();
+    };
 
     const followLabel=document.createElement("label");
     followLabel.textContent="Follow-up date";
     followLabel.style.gridColumn="1/-1";
 
-    list.append(row,notes,followLabel,followup);
+    list.append(row,analysis,notes,followLabel,followup);
   });
 }
 

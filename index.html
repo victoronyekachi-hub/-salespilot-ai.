@@ -3,1385 +3,1072 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0b100e">
-<title>SalesPilot AI | Sales Workspace</title>
+<meta name="theme-color" content="#080d0b">
+<title>SalesPilot AI — Intelligent Sales Workspace</title>
 
 <style>
-:root {
-  --bg:#0b100e;
-  --panel:#121a16;
-  --panel2:#18231d;
-  --line:#29372f;
-  --green:#36d98a;
-  --text:#f1f5f2;
-  --muted:#91a198;
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+:root{
+  --bg:#080d0b;
+  --panel:#101914;
+  --panel2:#15221b;
+  --line:#24362b;
+  --green:#65f0a0;
+  --green2:#21c875;
+  --text:#f3f8f4;
+  --muted:#8b9b90;
   --red:#ff7777;
+  --yellow:#f5c66c;
 }
 
-* {
-  box-sizing:border-box;
-}
+*{box-sizing:border-box;margin:0;padding:0}
 
-body {
-  margin:0;
-  font-family:Arial,sans-serif;
+body{
   background:var(--bg);
   color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  min-height:100vh;
 }
 
-header {
-  height:70px;
-  padding:0 6%;
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+
+.app{
+  display:flex;
+  min-height:100vh;
+}
+
+.sidebar{
+  width:245px;
+  background:#0c130f;
+  border-right:1px solid var(--line);
+  padding:25px 17px;
+  position:fixed;
+  top:0;bottom:0;left:0;
+  z-index:20;
+  display:flex;
+  flex-direction:column;
+}
+
+.logo{
+  font-family:'Space Grotesk';
+  font-size:22px;
+  font-weight:700;
+  margin:5px 8px 35px;
+}
+
+.logo span{color:var(--green)}
+
+.logo small{
+  display:block;
+  color:var(--muted);
+  font:10px 'DM Sans';
+  letter-spacing:2px;
+  margin-top:5px;
+}
+
+.nav-label{
+  color:#65766a;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:1.7px;
+  padding:12px 10px;
+}
+
+.nav button{
+  width:100%;
   display:flex;
   align-items:center;
-  justify-content:space-between;
-  border-bottom:1px solid var(--line);
+  gap:12px;
+  border:0;
+  background:transparent;
+  color:#9aa99e;
+  padding:13px 12px;
+  border-radius:10px;
+  margin:3px 0;
+  text-align:left;
+  transition:.2s;
 }
 
-.logo {
-  font-size:21px;
-  font-weight:bold;
-}
-
-.logo span {
+.nav button:hover,.nav button.active{
+  background:#17291e;
   color:var(--green);
 }
 
-.status {
-  color:var(--green);
+.nav-icon{font-size:18px;width:23px}
+
+.sidebar-bottom{
+  margin-top:auto;
+  background:linear-gradient(135deg,#172c20,#102017);
+  border:1px solid #294c34;
+  border-radius:14px;
+  padding:15px;
+}
+
+.sidebar-bottom p{
   font-size:12px;
-}
-
-.container {
-  width:90%;
-  max-width:1100px;
-  margin:35px auto;
-}
-
-h1 {
-  font-size:30px;
-  margin-bottom:8px;
-}
-
-.subtitle {
   color:var(--muted);
-  margin-bottom:30px;
+  margin-top:7px;
   line-height:1.5;
 }
 
-.cards {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:16px;
+.main{
+  margin-left:245px;
+  width:calc(100% - 245px);
+  padding:27px 34px 60px;
+  max-width:1700px;
+}
+
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:30px;
+}
+
+.breadcrumb{color:var(--muted);font-size:13px}
+
+.online{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:12px;
+  color:var(--green);
+  background:#12251a;
+  padding:9px 13px;
+  border:1px solid #244b32;
+  border-radius:30px;
+}
+
+.dot{
+  height:7px;width:7px;
+  background:var(--green);
+  border-radius:50%;
+  box-shadow:0 0 10px var(--green);
+}
+
+.hero{
+  position:relative;
+  overflow:hidden;
+  padding:35px;
+  border:1px solid #294333;
+  border-radius:22px;
+  background:
+    radial-gradient(ellipse at 85% 10%,#245537 0%,transparent 42%),
+    linear-gradient(120deg,#14251a,#0d1711 70%);
   margin-bottom:25px;
 }
 
-.card {
-  background:var(--panel);
-  border:1px solid var(--line);
-  border-radius:13px;
-  padding:20px;
+.hero:after{
+  content:"";
+  position:absolute;
+  width:260px;height:260px;
+  border:1px solid #4b9c65;
+  border-radius:50%;
+  right:-80px;bottom:-170px;
+  box-shadow:0 0 0 35px #65f0a008,0 0 0 75px #65f0a005;
 }
 
-.card h3 {
-  margin-top:0;
+.badge{
+  display:inline-block;
+  font-size:10px;
+  letter-spacing:1.5px;
+  color:var(--green);
+  background:#1c3b27;
+  padding:8px 12px;
+  border-radius:30px;
+  margin-bottom:18px;
 }
 
-.card p {
-  color:var(--muted);
+.hero h1{
+  font-family:'Space Grotesk';
+  font-size:clamp(27px,4vw,43px);
+  line-height:1.15;
+  max-width:650px;
+  margin-bottom:13px;
+}
+
+.hero h1 span{color:var(--green)}
+
+.hero p{
+  color:#a9b8ad;
+  max-width:600px;
   font-size:14px;
-  line-height:1.5;
+  line-height:1.7;
 }
 
-.section {
-  background:var(--panel);
+.hero-actions{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
+
+.btn{
+  border:0;
+  padding:12px 17px;
+  border-radius:9px;
+  font-weight:700;
+  font-size:12px;
+  transition:.2s;
+}
+
+.btn:hover{transform:translateY(-2px);filter:brightness(1.1)}
+
+.primary{background:var(--green);color:#092012}
+.secondary{background:#1b2b21;color:#dce9df;border:1px solid #35523e}
+.danger{background:#3a1b1b;color:#ffaaaa}
+.small{padding:8px 11px;font-size:11px}
+
+.section-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin:30px 0 15px;
+}
+
+.section-title h2{
+  font-family:'Space Grotesk';
+  font-size:19px;
+}
+
+.section-title p{font-size:12px;color:var(--muted);margin-top:4px}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:15px;
+}
+
+.card{
+  background:linear-gradient(145deg,#142019,#0f1712);
   border:1px solid var(--line);
-  border-radius:14px;
-  padding:22px;
-  margin-bottom:22px;
+  border-radius:15px;
+  padding:19px;
+  min-width:0;
 }
 
-.section h2 {
-  margin-top:0;
-  font-size:20px;
-}
-
-label {
-  display:block;
-  margin:15px 0 7px;
+.metric-top{
+  display:flex;
+  justify-content:space-between;
   color:var(--muted);
+  font-size:12px;
+}
+
+.metric-icon{
+  width:35px;height:35px;
+  display:grid;place-items:center;
+  border-radius:10px;
+  background:#1b3825;
+  font-size:17px;
+}
+
+.metric-value{
+  font-family:'Space Grotesk';
+  font-size:29px;
+  font-weight:700;
+  margin:17px 0 5px;
+}
+
+.metric-note{color:var(--green);font-size:11px}
+
+.layout{
+  display:grid;
+  grid-template-columns:1.4fr 1fr;
+  gap:16px;
+}
+
+.field{
+  width:100%;
+  background:#0b130e;
+  border:1px solid #2b4032;
+  color:white;
+  padding:12px;
+  border-radius:9px;
+  outline:none;
+  margin:7px 0 13px;
   font-size:13px;
 }
 
-input, select, textarea {
-  width:100%;
-  padding:13px;
-  background:#0b120e;
-  border:1px solid var(--line);
-  border-radius:8px;
-  color:white;
-  font-size:15px;
-  outline:none;
+.field:focus{border-color:var(--green)}
+
+label{
+  color:#a8b8ac;
+  font-size:11px;
+  font-weight:600;
 }
 
-input:focus, textarea:focus, select:focus {
-  border-color:var(--green);
-}
+textarea.field{min-height:90px;resize:vertical}
 
-button {
-  background:var(--green);
-  color:#06120b;
-  border:0;
-  padding:13px 18px;
-  border-radius:8px;
-  font-weight:bold;
-  cursor:pointer;
-  margin-top:14px;
-}
+.result{margin-top:15px}
 
-button:disabled {
-  opacity:.5;
-  cursor:not-allowed;
-}
-
-.secondary {
-  background:var(--panel2);
-  color:white;
-  border:1px solid var(--line);
-}
-
-#chatMessages {
-  height:330px;
-  overflow-y:auto;
-  background:#0b120e;
-  border:1px solid var(--line);
-  border-radius:10px;
+.business{
   padding:15px;
-  margin-bottom:15px;
+  border:1px solid var(--line);
+  background:#111b14;
+  border-radius:12px;
+  margin-top:10px;
 }
 
-.message {
-  padding:12px;
-  border-radius:9px;
-  margin-bottom:12px;
-  line-height:1.5;
-  white-space:pre-wrap;
-  overflow-wrap:anywhere;
+.business h3{font-size:14px;margin-bottom:7px}
+.business p{font-size:11px;color:var(--muted);line-height:1.7}
+.business-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+.tag{
+  display:inline-block;
+  color:var(--green);
+  background:#193322;
+  padding:5px 8px;
+  border-radius:5px;
+  font-size:10px;
+  margin:5px 4px 5px 0;
 }
 
-.user {
-  background:#203c2d;
-  margin-left:12%;
+.lead-row{
+  display:grid;
+  grid-template-columns:1.4fr 1fr 1fr auto;
+  gap:10px;
+  align-items:center;
+  padding:13px 0;
+  border-bottom:1px solid #243329;
+  font-size:12px;
 }
 
-.ai {
-  background:#18231d;
-  margin-right:12%;
+.lead-row:last-child{border:0}
+.lead-name{font-weight:700}
+.lead-sub{color:var(--muted);font-size:10px;margin-top:4px}
+
+.status{
+  background:#1a3022;
+  color:var(--green);
+  border:1px solid #31583b;
+  border-radius:6px;
+  padding:7px;
+  font-size:10px;
+  max-width:125px;
 }
 
-.error {
-  color:var(--red);
-}
+.status option{background:#101914}
 
-.chat-row {
-  display:flex;
+.pipeline{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
   gap:10px;
 }
 
-.chat-row input {
-  flex:1;
+.pipeline-column{
+  background:#0d1510;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:12px;
+  min-height:120px;
 }
 
-.chat-row button {
-  margin-top:0;
+.pipeline-column h3{
+  font-size:11px;
+  color:var(--muted);
+  margin-bottom:12px;
 }
 
-#researchResult {
-  margin-top:18px;
-  padding:15px;
-  background:#0b120e;
+.pipeline-item{
+  background:#19251d;
+  padding:10px;
+  border-radius:8px;
+  margin-bottom:8px;
+  font-size:11px;
+  border-left:3px solid var(--green);
+}
+
+.bar{
+  height:8px;
+  background:#25372b;
+  border-radius:20px;
+  overflow:hidden;
+  margin:10px 0 17px;
+}
+
+.bar span{
+  display:block;
+  height:100%;
+  background:linear-gradient(90deg,#21c875,#9bffc0);
+  border-radius:20px;
+}
+
+.chart-row{
+  display:flex;
+  justify-content:space-between;
+  font-size:11px;
+  color:var(--muted);
+}
+
+.notice{
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.6;
+  margin-top:12px;
+}
+
+.empty{
+  color:var(--muted);
+  font-size:12px;
+  text-align:center;
+  padding:25px 10px;
+}
+
+.chat-box{
+  height:230px;
+  overflow-y:auto;
+  padding:10px;
+  background:#0a120d;
   border:1px solid var(--line);
   border-radius:10px;
-  white-space:pre-wrap;
+  margin-bottom:12px;
+}
+
+.chat-message{
+  padding:10px 12px;
+  background:#18251c;
+  border-radius:10px;
+  font-size:12px;
   line-height:1.6;
-  overflow-wrap:anywhere;
-  min-height:50px;
+  margin-bottom:9px;
+  white-space:pre-wrap;
 }
 
-.small {
-  font-size:12px;
-  color:var(--muted);
-  line-height:1.5;
-}
+.chat-message.user{background:#193b27;margin-left:25px}
 
-footer {
-  text-align:center;
-  color:var(--muted);
-  padding:25px;
+.chat-input{display:flex;gap:8px}
+.chat-input .field{margin:0}
+
+.reminder{
+  padding:12px;
+  border-bottom:1px solid var(--line);
   font-size:12px;
 }
 
-@media(max-width:600px) {
-  h1 {font-size:25px;}
-  .container {width:92%;margin-top:25px;}
-  .section {padding:16px;}
-  .chat-row {flex-direction:column;}
-  .user {margin-left:5%;}
-  .ai {margin-right:5%;}
-}
-/* SALESPILOT UI IMPROVEMENTS */
-html {
-  scroll-behavior: smooth;
-  -webkit-text-size-adjust: 100%;
+.reminder small{display:block;color:var(--muted);margin-top:5px}
+
+.toast{
+  position:fixed;
+  bottom:20px;right:20px;
+  background:#1d3c28;
+  border:1px solid #4c9c62;
+  padding:13px 18px;
+  border-radius:10px;
+  font-size:12px;
+  z-index:100;
+  display:none;
 }
 
-body {
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
+.mobile-menu{display:none}
+
+@media(max-width:1100px){
+  .grid{grid-template-columns:repeat(2,1fr)}
+  .pipeline{grid-template-columns:repeat(3,1fr)}
 }
 
-.container {
-  max-width: 1120px;
-  margin: 30px auto;
-}
-
-.section,
-.card {
-  border-radius: 14px;
-  box-shadow: 0 8px 24px rgba(0,0,0,.16);
-  transition: border-color .18s ease, transform .18s ease;
-}
-
-.card:hover {
-  transform: translateY(-2px);
-}
-
-button {
-  min-height: 46px;
-  border-radius: 9px;
-  cursor: pointer;
-  touch-action: manipulation;
-  transition: transform .12s ease, opacity .12s ease;
-}
-
-button:active {
-  transform: scale(.98);
-}
-
-button:disabled {
-  opacity: .6;
-  cursor: wait;
-}
-
-input,
-select,
-textarea {
-  min-height: 46px;
-  max-width: 100%;
-  box-sizing: border-box;
-  border-radius: 8px;
-}
-
-button:focus-visible,
-input:focus-visible,
-select:focus-visible {
-  outline: 2px solid #36d98a;
-  outline-offset: 2px;
-}
-
-#researchResult > div {
-  overflow-wrap: anywhere;
-}
-
-@media (max-width: 700px) {
-  .container {
-    width: 92%;
-    margin: 20px auto;
+@media(max-width:760px){
+  .sidebar{
+    transform:translateX(-100%);
+    transition:.25s;
   }
-
-  .cards {
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
-
-  .section,
-  .card {
-    padding: 17px;
-  }
-
-  h1 {
-    font-size: clamp(24px, 6vw, 32px);
-    line-height: 1.2;
-  }
-
-  button {
-    width: 100%;
-  }
-
-  input,
-  select {
-    width: 100%;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
-    transition: none !important;
-  }
-}
-/* SALESPILOT CINEMATIC BACKGROUND */
-body {
-  background-color: #07100e;
-  background-image:
-    linear-gradient(
-      180deg,
-      rgba(4, 12, 15, 0.68),
-      rgba(4, 12, 15, 0.90) 55%,
-      #07100e
-    ),
-    url("./salespilot-hero-background.webp");
-  background-size: cover;
-  background-position: center top;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-}
-
-@media (max-width: 700px) {
-  body {
-    background-attachment: scroll;
-    background-position: center top;
-  }
-}
-/* PREMIUM SALES PILOT DASHBOARD */
-
-body {
-  background-color: #06100f;
-  background-image:
-    linear-gradient(
-      120deg,
-      rgba(3, 12, 17, .78),
-      rgba(3, 15, 14, .68)
-    ),
-    url("./salespilot-hero-background.webp");
-  background-size: cover;
-  background-position: center top;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-}
-
-header {
-  background: rgba(4, 15, 20, .82);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(54, 217, 138, .18);
-}
-
-.container {
-  max-width: 1150px;
-  width: 92%;
-  margin: 35px auto;
-}
-
-.container h1 {
-  font-size: clamp(30px, 5vw, 52px);
-  font-weight: 800;
-  letter-spacing: -1.5px;
-}
-
-.container p {
-  line-height: 1.7;
-}
-
-.card,
-.section {
-  background: rgba(7, 22, 23, .78) !important;
-  border: 1px solid rgba(54, 217, 138, .22);
-  backdrop-filter: blur(14px);
-  border-radius: 18px;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, .22);
-  margin-bottom: 20px;
-}
-
-.card h2,
-.section h2 {
-  color: #f3fff9;
-}
-
-.card:hover,
-.section:hover {
-  border-color: rgba(54, 217, 138, .65);
-}
-
-button {
-  background: linear-gradient(135deg, #36d98a, #00b894);
-  color: #04130d;
-  border: none;
-  font-weight: 700;
-  border-radius: 10px;
-  min-height: 46px;
-}
-
-input,
-select,
-textarea {
-  background: rgba(4, 15, 18, .9);
-  color: white;
-  border: 1px solid #29463b;
-  border-radius: 10px;
-  padding: 13px;
-}
-
-@media(max-width:700px) {
-  body {
-    background-attachment: scroll;
-  }
-
-  .container {
-    width: 92%;
-    margin: 24px auto;
-  }
-
-  .card,
-  .section {
-    padding: 19px;
-  }
-
-  .container h1 {
-    font-size: 32px;
-  }
-}
-.hero-badge {
-  display: inline-block;
-  padding: 9px 15px;
-  margin-bottom: 18px;
-  color: #36d98a;
-  background: rgba(54, 217, 138, .10);
-  border: 1px solid rgba(54, 217, 138, .3);
-  border-radius: 30px;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-}
-.container h1 {
-  max-width: 750px;
-  font-size: clamp(36px, 7vw, 64px);
-  line-height: 1.08;
-  font-weight: 850;
-  letter-spacing: -2px;
-  color: #ffffff;
-  margin-bottom: 20px;
-  text-shadow: 0 4px 25px rgba(0,0,0,.35);
-}
-
-.container h1 br {
-  display: block;
-  content: "";
-  margin-bottom: 5px;
-}
-.hero-actions {
-  display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
-  margin-top: 25px;
-}
-
-.hero-actions a {
-  padding: 14px 22px;
-  border-radius: 10px;
-  text-decoration: none;
-  font-weight: 700;
-  text-align: center;
-}
-
-.hero-primary {
-  background: #36d98a;
-  color: #06120b;
-}
-
-.hero-secondary {
-  background: rgba(255,255,255,.08);
-  color: white;
-  border: 1px solid rgba(255,255,255,.2);
-}
-
-@media(max-width:600px) {
-  .hero-actions {
-    flex-direction: column;
-  }
+  .sidebar.open{transform:translateX(0)}
+  .main{margin:0;width:100%;padding:18px 14px 40px}
+  .mobile-menu{display:block}
+  .topbar{margin-bottom:18px}
+  .hero{padding:25px 20px}
+  .layout{grid-template-columns:1fr}
+  .grid{gap:9px}
+  .card{padding:14px}
+  .metric-value{font-size:23px}
+  .pipeline{grid-template-columns:repeat(2,1fr)}
+  .lead-row{grid-template-columns:1fr 1fr}
+  .section-title{margin-top:24px}
 }
 </style>
 </head>
 
 <body>
+<div class="app">
 
-<header>
-  <div class="logo">SalesPilot<span> AI</span></div>
-  <div class="status">● Workspace</div>
+<aside class="sidebar" id="sidebar">
+  <div class="logo">SalesPilot<span> AI</span><small>INTELLIGENT SALES WORKSPACE</small></div>
+
+  <div class="nav-label">WORKSPACE</div>
+  <nav class="nav">
+    <button class="active" onclick="go('dashboard',this)"><span class="nav-icon">⌂</span>Dashboard</button>
+    <button onclick="go('finder',this)"><span class="nav-icon">⌕</span>Lead Finder</button>
+    <button onclick="go('leads',this)"><span class="nav-icon">♧</span>Lead Manager</button>
+    <button onclick="go('pipeline',this)"><span class="nav-icon">▥</span>Sales Pipeline</button>
+    <button onclick="go('assistant',this)"><span class="nav-icon">✧</span>AI Assistant</button>
+    <button onclick="go('analytics',this)"><span class="nav-icon">◷</span>Analytics</button>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <strong>✦ SalesPilot AI</strong>
+    <p>Your intelligent workspace for finding prospects and growing revenue.</p>
+  </div>
+</aside>
+
+<main class="main">
+
+<header class="topbar">
+  <button class="btn secondary mobile-menu" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+  <div class="breadcrumb">Workspace / <strong>Overview</strong></div>
+  <div class="online"><span class="dot"></span> System online</div>
 </header>
 
-<main class="container">
-<div class="hero-badge">
-  ✦ AI-POWERED SALES WORKSPACE
-</div>
-  <h1>Find Real Businesses.<br>
-Turn Opportunities<br>
-Into Revenue.</h1>
-  <p class="subtitle">
-    Discover real businesses, identify website opportunities, generate personalized outreach, and turn prospects into paying clients — all from one intelligent workspace.
-  </p>
-<div class="hero-actions">
-  <a href="#researchButton" class="hero-primary">Find Businesses →</a>
-  <a href="#chatMessages" class="hero-secondary">Try AI Assistant</a>
-</div>
-
-  <div class="cards">
-    <div class="card">
-      <h3>AI Assistant</h3>
-      <p>Ask questions and generate personalized sales messages.</p>
-    </div>
-
-    <div class="card">
-      <h3>Prospect Research</h3>
-      <p>Build prospecting plans for your target market.</p>
-    </div>
-
-    <div class="card">
-      <h3>Backend</h3>
-      <p id="backendStatus">Checking connection...</p>
+<section id="dashboard">
+  <div class="hero">
+    <div class="badge">✦ AI-POWERED SALES WORKSPACE</div>
+    <h1>Find opportunities.<br>Build relationships. <span>Grow revenue.</span></h1>
+    <p>Discover businesses, identify sales opportunities, generate personalized outreach and manage your prospects from one intelligent workspace.</p>
+    <div class="hero-actions">
+      <button class="btn primary" onclick="go('finder')">＋ Find Businesses</button>
+      <button class="btn secondary" onclick="go('assistant')">✧ Open AI Assistant</button>
     </div>
   </div>
 
-  <section class="section">
-    <h2>AI Sales Assistant</h2>
-    <p class="small">
-      Ask SalesPilot to research a prospect, write an email
-      or improve your sales strategy.
-    </p>
+  <div class="section-title">
+    <div><h2>Performance overview</h2><p>Your sales activity at a glance.</p></div>
+    <button class="btn secondary small" onclick="refresh()">↻ Refresh</button>
+  </div>
 
-    <div id="chatMessages">
-      <div class="message ai">
-        Hello! I'm SalesPilot AI. How can I help you grow your sales today?
-      </div>
+  <div class="grid">
+    <div class="card">
+      <div class="metric-top">Total prospects <span class="metric-icon">♧</span></div>
+      <div class="metric-value" id="totalLeads">0</div>
+      <div class="metric-note">Saved businesses</div>
     </div>
-
-    <div class="chat-row">
-      <input
-        id="chatInput"
-        type="text"
-        placeholder="Ask SalesPilot anything..."
-        autocomplete="off"
-      >
-      <button id="sendButton" type="button">Send</button>
+    <div class="card">
+      <div class="metric-top">Open pipeline <span class="metric-icon">◈</span></div>
+      <div class="metric-value" id="openRevenue">$0</div>
+      <div class="metric-note">Potential deal value</div>
     </div>
-  </section>
+    <div class="card">
+      <div class="metric-top">Closed revenue <span class="metric-icon">↗</span></div>
+      <div class="metric-value" id="closedRevenue">$0</div>
+      <div class="metric-note">Converted deals</div>
+    </div>
+    <div class="card">
+      <div class="metric-top">Follow-ups due <span class="metric-icon">◷</span></div>
+      <div class="metric-value" id="dueCount">0</div>
+      <div class="metric-note">Require your attention</div>
+    </div>
+  </div>
 
-  <section class="section">
-  <h2>Real Business Lead Finder</h2>
-
-  <p class="small">
-    Search actual businesses using public OpenStreetMap data.
-  </p>
-
-  <label for="industry">Business industry</label>
-  <input
-    id="industry"
-    type="text"
-    placeholder="Example: restaurant"
-  >
-
-  <label for="location">City and country</label>
-  <input
-    id="location"
-    type="text"
-    placeholder="Example: Houston, Texas, USA"
-  >
-
-  <label for="quantity">Number of businesses</label>
-  <select id="quantity">
-    <option value="5">5 businesses</option>
-    <option value="10" selected>10 businesses</option>
-    <option value="20">20 businesses</option>
-  </select>
-
-  <button id="researchButton" type="button">
-    Find Businesses
-  </button>
-
-  <div id="researchResult" style="margin-top:20px;">
-    Your business search results will appear here.
+  <div class="layout">
+    <div class="card" style="margin-top:18px">
+      <div class="section-title"><div><h2>Sales performance</h2><p>Pipeline value by lead status</p></div></div>
+      <div id="performanceBars"></div>
+    </div>
+    <div class="card" style="margin-top:18px">
+      <div class="section-title"><div><h2>Upcoming follow-ups</h2><p>Keep your prospects moving</p></div></div>
+      <div id="dashboardReminders"></div>
+    </div>
   </div>
 </section>
 
-</main>
+<section id="finder">
+  <div class="section-title">
+    <div><h2>Real Business Finder</h2><p>Discover potential customers by industry and location.</p></div>
+  </div>
 
-<footer>
-  SalesPilot AI · Your intelligent sales workspace
+  <div class="card">
+    <div class="layout">
+      <div>
+        <label>Industry</label>
+        <input class="field" id="industry" placeholder="e.g. restaurants, salons, dentists">
+      </div>
+      <div>
+        <label>Location</label>
+        <input class="field" id="location" placeholder="e.g. Houston, Texas, USA">
+      </div>
+    </div>
+    <label>Number of prospects</label>
+    <select class="field" id="quantity">
+      <option value="10">10 businesses</option>
+      <option value="20">20 businesses</option>
+      <option value="30">30 businesses</option>
+      <option value="50">50 businesses</option>
+    </select>
+    <button class="btn primary" id="findButton" onclick="findBusinesses()">⌕ Discover Businesses</button>
+    <div class="notice">Business listings are sourced from OpenStreetMap. Contact details and website information may be incomplete and should be verified.</div>
+  </div>
+  <div class="result" id="researchResult"></div>
+</section>
+
+<section id="leads">
+  <div class="section-title">
+    <div><h2>Lead Management</h2><p>Manage your prospects and track every opportunity.</p></div>
+    <button class="btn secondary small" onclick="exportCSV()">↓ Export CSV</button>
+  </div>
+
+  <div class="card">
+    <div class="layout">
+      <input class="field" id="leadSearch" placeholder="Search saved businesses..." oninput="renderLeads()">
+      <select class="field" id="statusFilter" onchange="renderLeads()">
+        <option value="">All statuses</option>
+        <option>New</option><option>Contacted</option>
+        <option>Interested</option><option>Negotiation</option>
+        <option>Won</option>
+      </select>
+    </div>
+    <div id="leadList"></div>
+  </div>
+</section>
+
+<section id="pipeline">
+  <div class="section-title">
+    <div><h2>Sales Pipeline</h2><p>Track prospects as they move towards becoming customers.</p></div>
+  </div>
+  <div class="pipeline" id="pipelineBoard"></div>
+</section>
+
+<section id="assistant">
+  <div class="section-title">
+    <div><h2>AI Sales Assistant</h2><p>Generate ideas, outreach and sales strategies.</p></div>
+  </div>
+  <div class="card">
+    <div class="chat-box" id="chatBox">
+      <div class="chat-message">Hello! I'm your SalesPilot AI assistant. Ask me to write outreach emails, analyse prospects or develop a sales strategy.</div>
+    </div>
+    <div class="chat-input">
+      <input class="field" id="chatInput" placeholder="Ask your AI sales assistant..." onkeydown="if(event.key==='Enter')sendMessage()">
+      <button class="btn primary" id="sendButton" onclick="sendMessage()">Send ↗</button>
+    </div>
+  </div>
+</section>
+
+<section id="analytics">
+  <div class="section-title">
+    <div><h2>Sales Analytics</h2><p>Understand your sales activity and conversion performance.</p></div>
+  </div>
+  <div class="grid">
+    <div class="card"><div class="metric-top">Total leads</div><div class="metric-value" id="analyticsTotal">0</div></div>
+    <div class="card"><div class="metric-top">Conversion rate</div><div class="metric-value" id="conversionRate">0%</div></div>
+    <div class="card"><div class="metric-top">Deals won</div><div class="metric-value" id="wonCount">0</div></div>
+    <div class="card"><div class="metric-top">Average deal</div><div class="metric-value" id="averageDeal">$0</div></div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <h2 style="font-size:17px">Sales breakdown</h2>
+    <div id="analyticsBars" style="margin-top:20px"></div>
+  </div>
+</section>
+
+<footer style="text-align:center;color:#64766a;font-size:11px;padding:35px 0">
+  SalesPilot AI · Intelligent Sales Workspace
 </footer>
 
+</main>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-"use strict";
+const API_URL = "https://salespilot-ai-backend.victoronyekachi070.workers.dev/";
 
-/* Your existing Cloudflare Worker */
-const API_URL =
-"https://salespilot-ai-backend.victoronyekachi070.workers.dev/";
+const STORAGE_KEY = "salespilot_saved_leads";
+const statuses = ["New","Contacted","Interested","Negotiation","Won"];
 
-/* Safe element references */
-const chatMessages = document.getElementById("chatMessages");
-const chatInput = document.getElementById("chatInput");
-const sendButton = document.getElementById("sendButton");
-const researchButton = document.getElementById("researchButton");
-const researchResult = document.getElementById("researchResult");
-const backendStatus = document.getElementById("backendStatus");
+let businesses = [];
+let leads = loadLeads();
 
-let busy = false;
-
-/* Display messages */
-function addMessage(text, type) {
-  const message = document.createElement("div");
-  message.className = "message " + type;
-  message.textContent = text;
-  chatMessages.appendChild(message);
-  chatMessages.scrollTop = chatMessages.scrollHeight;
+function loadLeads(){
+  try{return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []}
+  catch{return []}
 }
 
-/* Communicate with Cloudflare backend */
-async function askAI(message) {
-  const controller = new AbortController();
+function saveLeads(){
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(leads));
+  refresh();
+}
 
-  const timeout = setTimeout(function() {
-    controller.abort();
-  }, 60000);
+function money(value){
+  return new Intl.NumberFormat("en-US",{
+    style:"currency",currency:"USD",maximumFractionDigits:0
+  }).format(Number(value)||0);
+}
 
-  try {
-    const response = await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        message: message
-      }),
-      signal: controller.signal
+function toast(message){
+  const el=document.getElementById("toast");
+  el.textContent=message;
+  el.style.display="block";
+  setTimeout(()=>el.style.display="none",2500);
+}
+
+function go(section,button){
+  document.querySelectorAll("main section").forEach(s=>s.style.display="none");
+  document.getElementById(section).style.display="block";
+
+  document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
+  if(button)button.classList.add("active");
+
+  document.getElementById("sidebar").classList.remove("open");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+document.querySelectorAll("main section").forEach(s=>{
+  if(s.id!=="dashboard")s.style.display="none";
+});
+
+async function apiPost(payload,timeout=45000){
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),timeout);
+
+  try{
+    const response=await fetch(API_URL,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(payload),
+      signal:controller.signal
     });
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(
-        data.error || data.message || "Server error: " + response.status
-      );
-    }
-
-    if (!data.reply) {
-      throw new Error("The AI returned an empty response.");
-    }
-
-    return data.reply;
-
-  } catch (error) {
-    if (error.name === "AbortError") {
-      throw new Error("The request timed out. Please try again.");
-    }
-
-    throw error;
-
-  } finally {
-    clearTimeout(timeout);
+    const data=await response.json();
+    if(!response.ok)throw new Error(data.error||"Request failed");
+    return data;
+  }finally{
+    clearTimeout(timer);
   }
 }
 
-/* AI chat */
-async function sendMessage() {
-  const message = chatInput.value.trim();
+async function findBusinesses(){
+  const industry=document.getElementById("industry").value.trim();
+  const location=document.getElementById("location").value.trim();
+  const limit=Number(document.getElementById("quantity").value);
+  const button=document.getElementById("findButton");
+  const output=document.getElementById("researchResult");
 
-  if (!message || busy) return;
-
-  busy = true;
-  sendButton.disabled = true;
-  sendButton.textContent = "Thinking...";
-
-  addMessage(message, "user");
-  chatInput.value = "";
-
-  const loading = document.createElement("div");
-  loading.className = "message ai";
-  loading.textContent = "SalesPilot is thinking...";
-  chatMessages.appendChild(loading);
-
-  try {
-    const reply = await askAI(message);
-    loading.textContent = reply;
-
-    try {
-      const history = JSON.parse(
-        localStorage.getItem("salespilotHistory") || "[]"
-      );
-
-      history.push({
-        question: message,
-        answer: reply
-      });
-
-      localStorage.setItem(
-        "salespilotHistory",
-        JSON.stringify(history.slice(-30))
-      );
-    } catch (storageError) {
-      console.log("Chat history could not be saved.");
-    }
-
-  } catch (error) {
-    loading.textContent = "Error: " + error.message;
-    loading.classList.add("error");
-
-  } finally {
-    busy = false;
-    sendButton.disabled = false;
-    sendButton.textContent = "Send";
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-  }
-}
-
-/* Prospect research */
-async function generateResearch() {
-  if (busy) return;
-
-  const industry = document.getElementById("industry").value.trim();
-  const location = document.getElementById("location").value.trim();
-  const quantity = document.getElementById("quantity").value;
-
-  if (!industry || !location) {
-    researchResult.textContent =
-      "Please enter both an industry and a target location.";
+  if(!industry||!location){
+    toast("Enter an industry and location first.");
     return;
   }
 
-  busy = true;
-  researchButton.disabled = true;
-  researchButton.textContent = "Researching...";
-  researchResult.textContent = "SalesPilot is preparing your research plan...";
+  button.disabled=true;
+  button.textContent="Searching businesses...";
+  output.innerHTML='<div class="card empty">Searching business listings. Please wait...</div>';
 
-  const prompt =
-    "Act as a professional B2B sales research assistant. " +
-    "Create a practical prospecting research plan for " +
-    quantity + " potential prospects in the " + industry +
-    " industry located in " + location + ". " +
-    "For each prospect idea, describe the type of business to target, " +
-    "why it may need sales or web design services, " +
-    "what to investigate before contacting it, and a suggested " +
-    "personalized outreach angle. Include useful search phrases. " +
-    "Do not invent real company names, email addresses, phone numbers, " +
-    "or claim that any business has been verified. " +
-    "Clearly separate suggestions from verified facts.";
+  try{
+    const data=await apiPost({action:"findBusinesses",industry,location,limit},60000);
+    businesses=data.businesses||[];
 
-  try {
-    const reply = await askAI(prompt);
-    researchResult.textContent = reply;
-
-  } catch (error) {
-    researchResult.textContent = "Error: " + error.message;
-
-  } finally {
-    busy = false;
-    researchButton.disabled = false;
-    researchButton.textContent = "Generate Research Plan";
-  }
-}
-
-/* Button events */
-sendButton.addEventListener("click", sendMessage);
-
-chatInput.addEventListener("keydown", function(event) {
-  if (event.key === "Enter") {
-    event.preventDefault();
-    sendMessage();
-  }
-});
-
-researchButton.addEventListener("click", generateResearch);
-
-/* Check backend connection */
-async function checkBackend() {
-  try {
-    const response = await fetch(API_URL, {
-      method: "GET"
-    });
-
-    if (!response.ok) {
-      throw new Error("Backend returned " + response.status);
-    }
-
-    const data = await response.json();
-
-    backendStatus.textContent =
-      data.message || "Backend connected.";
-
-    backendStatus.style.color = "#36d98a";
-
-  } catch (error) {
-    backendStatus.textContent = "Connection problem: " + error.message;
-    backendStatus.style.color = "#ff7777";
-  }
-}
-
-checkBackend();
-/* REAL BUSINESS LEAD FINDER */
-
-const BUSINESS_API =
-"https://salespilot-ai-backend.victoronyekachi070.workers.dev/";
-
-const findButton = document.getElementById("researchButton");
-const resultBox = document.getElementById("researchResult");
-
-if (findButton && resultBox) {
-
-  findButton.onclick = async function () {
-
-    const industry = document.getElementById("industry").value.trim();
-    const location = document.getElementById("location").value.trim();
-    const limit = Number(document.getElementById("quantity").value);
-
-    if (!industry || !location) {
-      resultBox.textContent = "Enter an industry and location first.";
+    output.innerHTML="";
+    if(!businesses.length){
+      output.innerHTML='<div class="card empty">No matching businesses found. Try another industry or location.</div>';
       return;
     }
 
-    findButton.disabled = true;
-    findButton.textContent = "Searching...";
-    resultBox.textContent = "Finding real business listings...";
+    const heading=document.createElement("div");
+    heading.className="notice";
+    heading.textContent=`Found ${businesses.length} listings near ${data.location||location}.`;
+    output.appendChild(heading);
 
-    try {
+    businesses.forEach((business,index)=>{
+      const card=document.createElement("div");
+      card.className="business";
 
-      const response = await fetch(BUSINESS_API, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          action: "findBusinesses",
-          industry: industry,
-          location: location,
-          limit: limit
-        })
-      });
+      const name=document.createElement("h3");
+      name.textContent=business.name||"Unnamed business";
 
-      const data = await response.json();
+      const details=document.createElement("p");
+      details.textContent=[
+        business.category,
+        business.address,
+        business.phone,
+        business.website
+      ].filter(Boolean).join(" · ");
 
-      if (!response.ok) {
-        throw new Error(data.error || "Business search failed.");
-      }
+      const tag=document.createElement("span");
+      tag.className="tag";
+      tag.textContent=business.website?"Website listed — review needed":"Website opportunity — no website listed";
 
-      resultBox.innerHTML = "";
+      const actions=document.createElement("div");
+      actions.className="business-actions";
 
-      const heading = document.createElement("h3");
-      heading.textContent = data.total + " businesses found";
-      resultBox.appendChild(heading);
+      const save=document.createElement("button");
+      save.className="btn primary small";
+      save.textContent="＋ Save Lead";
+      save.onclick=()=>saveLead(business);
 
-      if (!data.businesses || data.businesses.length === 0) {
-        resultBox.appendChild(
-          document.createTextNode("No matching listings found. Try another industry or city.")
-        );
-      }
+      const analyse=document.createElement("button");
+      analyse.className="btn secondary small";
+      analyse.textContent="✧ Analyse & Write Outreach";
+      analyse.onclick=()=>analyseBusiness(business);
 
-      data.businesses.forEach(function (business) {
-
-        const card = document.createElement("div");
-        card.style.cssText =
-          "padding:15px;margin:12px 0;background:#18231d;border:1px solid #29372f;border-radius:10px;";
-
-        const name = document.createElement("h3");
-        name.textContent = business.name;
-
-        const details = document.createElement("p");
-        details.style.color = "#91a198";
-        details.textContent =
-          "Category: " + business.category +
-          "\nAddress: " + (business.address || "Not listed") +
-          "\nWebsite: " + (business.website || "Not listed") +
-          "\nPhone: " + (business.phone || "Not listed");
-
-        details.style.whiteSpace = "pre-line";
-
-        card.appendChild(name);
-        card.appendChild(details);
-// WEBSITE OPPORTUNITY ANALYSIS
-
-const analysis = document.createElement("div");
-
-analysis.style.cssText =
-  "margin-top:12px;padding:12px;background:#0b120e;border-radius:8px;";
-
-const hasWebsite = Boolean(business.website);
-
-const title = document.createElement("strong");
-
-title.textContent = hasWebsite
-  ? "Website listed — review needed"
-  : "Website opportunity — no website listed";
-
-title.style.color = hasWebsite ? "#36d98a" : "#ffcc66";
-
-const description = document.createElement("p");
-
-description.textContent = hasWebsite
-  ? "This business has a listed website. Review its design, mobile experience and performance manually."
-  : "No website is listed in the available business data. This business may be worth investigating as a potential web design prospect.";
-
-description.style.cssText =
-  "color:#91a198;font-size:13px;line-height:1.5;";
-
-analysis.appendChild(title);
-analysis.appendChild(description);
-
-card.appendChild(analysis);
-// AI OUTREACH GENERATOR
-
-const outreachButton = document.createElement("button");
-
-outreachButton.textContent = "Generate Outreach Email";
-
-outreachButton.style.cssText =
-  "width:100%;margin-top:12px;background:#36d98a;color:#06120b;padding:12px;border:0;border-radius:8px;font-weight:bold;";
-
-const outreachResult = document.createElement("div");
-
-outreachResult.style.cssText =
-  "margin-top:12px;padding:12px;background:#0b120e;border-radius:8px;white-space:pre-wrap;line-height:1.6;";
-
-outreachButton.onclick = async function() {
-
-  outreachButton.disabled = true;
-  outreachButton.textContent = "Generating...";
-
-  try {
-
-    const prompt =
-      "Write a personalized, professional cold outreach email for this business. " +
-      "We offer professional website design services. " +
-      "Business name: " + business.name + ". " +
-      "Industry: " + business.category + ". " +
-      "Location: " + (business.address || location) + ". " +
-      "Website listed: " + (business.website || "No website listed") + ". " +
-      "Explain a potential business benefit without inventing problems or claiming " +
-      "you inspected the website. Include a subject line and a natural call to action. " +
-      "Keep it concise and persuasive.";
-
-    const response = await fetch(BUSINESS_API, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        message: prompt
-      })
+      actions.append(save,analyse);
+      card.append(name,details,tag,actions);
+      output.appendChild(card);
     });
 
-    const data = await response.json();
+  }catch(error){
+    output.innerHTML='<div class="card empty"></div>';
+    output.firstChild.textContent="Search failed: "+error.message;
+  }finally{
+    button.disabled=false;
+    button.textContent="⌕ Discover Businesses";
+  }
+}
 
-    if (!response.ok || !data.reply) {
-      throw new Error(data.error || "Could not generate email.");
-    }
+function saveLead(business){
+  const exists=leads.some(l=>
+    l.name.toLowerCase()===String(business.name).toLowerCase() &&
+    l.address===business.address
+  );
 
-    outreachResult.textContent = data.reply;
+  if(exists){toast("This business is already saved.");return;}
 
-    const copyButton = document.createElement("button");
-    copyButton.textContent = "Copy Email";
-    copyButton.className = "secondary";
+  leads.unshift({
+    id:Date.now()+Math.random(),
+    name:business.name||"Unnamed business",
+    address:business.address||"",
+    phone:business.phone||"",
+    website:business.website||"",
+    category:business.category||"",
+    status:"New",
+    notes:"",
+    followup:"",
+    dealValue:0,
+    score:business.website?65:85,
+    created:new Date().toISOString()
+  });
 
-    copyButton.onclick = async function() {
-      try {
-        await navigator.clipboard.writeText(data.reply);
-        copyButton.textContent = "Copied!";
-      } catch (error) {
-        outreachResult.textContent +=
-          "\n\nClipboard unavailable. Select and copy the email manually.";
+  saveLeads();
+  toast("Lead saved successfully.");
+}
+
+function analyseBusiness(business){
+  go("assistant");
+  const prompt=`Analyse this potential sales prospect and write a personalised, professional outreach email. Business: ${business.name}. Industry: ${business.category}. Address: ${business.address}. Website: ${business.website||"No website listed"}. Phone: ${business.phone||"Not available"}. Do not invent website problems or business facts.`;
+  document.getElementById("chatInput").value=prompt;
+  sendMessage();
+}
+
+async function sendMessage(){
+  const input=document.getElementById("chatInput");
+  const box=document.getElementById("chatBox");
+  const button=document.getElementById("sendButton");
+  const message=input.value.trim();
+
+  if(!message)return;
+
+  const user=document.createElement("div");
+  user.className="chat-message user";
+  user.textContent=message;
+  box.appendChild(user);
+
+  input.value="";
+  button.disabled=true;
+  button.textContent="Thinking...";
+
+  const loading=document.createElement("div");
+  loading.className="chat-message";
+  loading.textContent="SalesPilot AI is thinking...";
+  box.appendChild(loading);
+  box.scrollTop=box.scrollHeight;
+
+  try{
+    const data=await apiPost({message},60000);
+    loading.textContent=data.reply||"No response received.";
+  }catch(error){
+    loading.textContent="AI request failed: "+error.message;
+  }finally{
+    button.disabled=false;
+    button.textContent="Send ↗";
+    box.scrollTop=box.scrollHeight;
+  }
+}
+
+function renderLeads(){
+  const list=document.getElementById("leadList");
+  const search=(document.getElementById("leadSearch").value||"").toLowerCase();
+  const filter=document.getElementById("statusFilter").value;
+
+  list.innerHTML="";
+  const filtered=leads.filter(l=>{
+    const matches=(l.name+" "+l.address+" "+l.category).toLowerCase().includes(search);
+    return matches&&(!filter||l.status===filter);
+  });
+
+  if(!filtered.length){
+    list.innerHTML='<div class="empty">No matching leads yet. Discover and save businesses to get started.</div>';
+    return;
+  }
+
+  filtered.forEach(lead=>{
+    const row=document.createElement("div");
+    row.className="lead-row";
+
+    const info=document.createElement("div");
+    const name=document.createElement("div");
+    name.className="lead-name";
+    name.textContent=lead.name;
+    const sub=document.createElement("div");
+    sub.className="lead-sub";
+    sub.textContent=lead.address||lead.category||"Saved prospect";
+    info.append(name,sub);
+
+    const value=document.createElement("input");
+    value.className="field";
+    value.style.margin="0";
+    value.type="number";
+    value.min="0";
+    value.placeholder="Deal value ($)";
+    value.value=lead.dealValue||"";
+    value.onchange=()=>{lead.dealValue=Number(value.value)||0;saveLeads()};
+
+    const status=document.createElement("select");
+    status.className="status";
+    statuses.forEach(s=>{
+      const option=document.createElement("option");
+      option.value=s;option.textContent=s;
+      status.appendChild(option);
+    });
+    status.value=lead.status||"New";
+    status.onchange=()=>{lead.status=status.value;saveLeads()};
+
+    const remove=document.createElement("button");
+    remove.className="btn danger small";
+    remove.textContent="Remove";
+    remove.onclick=()=>{
+      if(confirm("Remove this lead?")){
+        leads=leads.filter(l=>l.id!==lead.id);
+        saveLeads();
       }
     };
 
-    outreachResult.appendChild(copyButton);
+    row.append(info,value,status,remove);
 
-  } catch (error) {
+    const notes=document.createElement("textarea");
+    notes.className="field";
+    notes.placeholder="Add notes about this prospect...";
+    notes.value=lead.notes||"";
+    notes.style.gridColumn="1/-1";
+    notes.style.minHeight="55px";
+    notes.onchange=()=>{lead.notes=notes.value;saveLeads()};
 
-    outreachResult.textContent = "Error: " + error.message;
+    const followup=document.createElement("input");
+    followup.className="field";
+    followup.type="date";
+    followup.value=lead.followup||"";
+    followup.style.gridColumn="1/-1";
+    followup.onchange=()=>{lead.followup=followup.value;saveLeads()};
 
-  } finally {
+    const followLabel=document.createElement("label");
+    followLabel.textContent="Follow-up date";
+    followLabel.style.gridColumn="1/-1";
 
-    outreachButton.disabled = false;
-    outreachButton.textContent = "Generate Outreach Email";
-
-  }
-};
-
-card.appendChild(outreachButton);
-card.appendChild(outreachResult);
-        resultBox.appendChild(card);
-      });
-
-    } catch (error) {
-
-      resultBox.textContent = "Search error: " + error.message;
-
-    } finally {
-
-      findButton.disabled = false;
-      findButton.textContent = "Find Businesses";
-
-    }
-  };
-}
-/* SALESPILOT LEAD MANAGEMENT */
-(function () {
-  const STORAGE_KEY = "salespilot_saved_leads";
-  let leads = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-
-  const container = document.querySelector(".container");
-  if (!container) return;
-
-  const section = document.createElement("section");
-  section.className = "section";
-  section.style.marginTop = "30px";
-
-  section.innerHTML = `
-    <h2>📊 Lead Management</h2>
-    <p class="small">Save prospects and manage your sales pipeline.</p>
-
-    <div id="leadStats" style="display:flex;gap:12px;flex-wrap:wrap;margin:20px 0;"></div>
-
-    <div id="savedLeads"></div>
-  `;
-
-  container.appendChild(section);
-
-  function saveLeads() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(leads));
-  }
-
-  function renderLeads() {
-    const stats = document.getElementById("leadStats");
-    const list = document.getElementById("savedLeads");
-/* SMART FOLLOW-UP REMINDERS */
-let reminderBox = document.getElementById("followupReminders");
-
-if (!reminderBox) {
-  reminderBox = document.createElement("div");
-  reminderBox.id = "followupReminders";
-  reminderBox.style.cssText =
-    "padding:16px;margin:18px 0;background:#10251c;border:1px solid #294638;border-radius:12px;";
-  list.parentNode.insertBefore(reminderBox, list);
-}
-
-const today = new Date();
-today.setHours(0, 0, 0, 0);
-
-const reminders = leads
-  .filter(lead => lead.followup)
-  .map(lead => {
-    const parts = lead.followup.split("-");
-    const date = new Date(
-      Number(parts[0]),
-      Number(parts[1]) - 1,
-      Number(parts[2])
-    );
-    date.setHours(0, 0, 0, 0);
-
-    return { ...lead, reminderDate: date };
-  })
-  .filter(lead => lead.reminderDate <= new Date(today.getTime() + 7 * 86400000))
-  .sort((a, b) => a.reminderDate - b.reminderDate);
-
-reminderBox.innerHTML = "<h3>🔔 Follow-up Reminders</h3>";
-
-if (!reminders.length) {
-  reminderBox.innerHTML +=
-    "<p>No follow-ups due in the next 7 days.</p>";
-} else {
-  reminders.forEach(lead => {
-    const days = Math.round(
-      (lead.reminderDate - today) / 86400000
-    );
-
-    const label = days < 0
-      ? "OVERDUE"
-      : days === 0
-      ? "DUE TODAY"
-      : "UPCOMING";
-
-    const item = document.createElement("p");
-    item.style.cssText =
-      "padding:10px;margin:8px 0;background:#07140f;border-radius:8px;";
-
-    item.textContent =
-      label + " — " + lead.name + " (" + lead.followup + ")";
-
-    reminderBox.appendChild(item);
-  });
-}
-    const statuses = ["New", "Contacted", "Interested", "Converted"];
-
-    stats.innerHTML = "";
-
-    ["Total", "New", "Contacted", "Interested", "Converted"].forEach(status => {
-      const count = status === "Total"
-        ? leads.length
-        : leads.filter(l => l.status === status).length;
-
-      const box = document.createElement("div");
-      box.style.cssText = "flex:1;min-width:90px;padding:14px;background:#10251c;border-radius:10px;";
-      box.innerHTML = `<strong style="font-size:22px;color:#36d98a">${count}</strong><br><small>${status}</small>`;
-      stats.appendChild(box);
-    });
-
-    list.innerHTML = "";
-/* LEAD SEARCH AND FILTERS */
-const filterBox = document.createElement("div");
-
-filterBox.style.cssText =
-  "display:grid;gap:12px;margin:18px 0;padding:15px;background:#10251c;border-radius:12px;";
-
-filterBox.innerHTML = `
-  <input id="leadSearch" placeholder="🔍 Search saved businesses...">
-
-  <select id="leadStatusFilter">
-    <option value="All">All Lead Statuses</option>
-    <option value="New">New</option>
-    <option value="Contacted">Contacted</option>
-    <option value="Interested">Interested</option>
-    <option value="Converted">Converted</option>
-  </select>
-
-  <label style="color:#36d98a;">
-    <input type="checkbox" id="overdueFilter">
-    Show overdue follow-ups only
-  </label>
-`;
-
-list.appendChild(filterBox);
-
-function applyLeadFilters() {
-  const search = document.getElementById("leadSearch").value.toLowerCase();
-  const selectedStatus = document.getElementById("leadStatusFilter").value;
-  const overdueOnly = document.getElementById("overdueFilter").checked;
-
-  Array.from(list.children).forEach(card => {
-    if (!card.querySelector("h3") || !card.querySelector("select")) return;
-
-    const name = card.querySelector("h3").textContent.toLowerCase();
-    const status = card.querySelector("select").value;
-    const date = card.querySelector('input[type="date"]').value;
-
-    const isOverdue = date && date < new Date().toLocaleDateString("en-CA");
-
-    const matches =
-      name.includes(search) &&
-      (selectedStatus === "All" || status === selectedStatus) &&
-      (!overdueOnly || isOverdue);
-
-    card.style.display = matches ? "" : "none";
+    list.append(row,notes,followLabel,followup);
   });
 }
 
-filterBox.querySelectorAll("input, select").forEach(control => {
-  control.addEventListener("input", applyLeadFilters);
-  control.addEventListener("change", applyLeadFilters);
-});
-    if (!leads.length) {
-      list.textContent = "No saved leads yet. Search for businesses and save prospects to begin.";
-      return;
-    }
+function renderPipeline(){
+  const board=document.getElementById("pipelineBoard");
+  board.innerHTML="";
 
-    leads.forEach((lead, index) => {
-      const card = document.createElement("div");
-      card.style.cssText = "padding:16px;margin:12px 0;background:#10201a;border:1px solid #294638;border-radius:12px;";
+  statuses.forEach(status=>{
+    const column=document.createElement("div");
+    column.className="pipeline-column";
 
-      const title = document.createElement("h3");
-      title.textContent = lead.name;
+    const heading=document.createElement("h3");
+    const matching=leads.filter(l=>l.status===status);
+    heading.textContent=status+" · "+matching.length;
+    column.appendChild(heading);
 
-      const details = document.createElement("p");
-      details.textContent = lead.address || "Address not listed";
-const dealValue = document.createElement("input");
-dealValue.type = "number";
-dealValue.placeholder = "Deal value (USD)";
-dealValue.min = "0";
-dealValue.step = "0.01";
-dealValue.value = lead.dealValue || "";
-dealValue.style.cssText = "width:100%;margin:12px 0;padding:12px;";
-dealValue.onchange = () => {
-  lead.dealValue = Number(dealValue.value) || 0;
-  saveLeads();
+    matching.forEach(lead=>{
+      const item=document.createElement("div");
+      item.className="pipeline-item";
+      item.textContent=lead.name+" · "+money(lead.dealValue);
+      column.appendChild(item);
+    });
+
+    board.appendChild(column);
+  });
+}
+
+function renderReminders(){
+  const today=new Date().toISOString().slice(0,10);
+  const upcoming=leads.filter(l=>l.followup).sort((a,b)=>a.followup.localeCompare(b.followup));
+  const due=upcoming.filter(l=>l.followup<=today);
+
+  document.getElementById("dueCount").textContent=due.length;
+
+  const box=document.getElementById("dashboardReminders");
+  box.innerHTML="";
+
+  if(!upcoming.length){
+    box.innerHTML='<div class="empty">No follow-ups scheduled yet.</div>';
+    return;
+  }
+
+  upcoming.slice(0,5).forEach(lead=>{
+    const item=document.createElement("div");
+    item.className="reminder";
+    item.textContent=lead.name;
+    const small=document.createElement("small");
+    small.textContent=(lead.followup<today?"Overdue · ":lead.followup===today?"Due today · ":"Upcoming · ")+lead.followup;
+    item.appendChild(small);
+    box.appendChild(item);
+  });
+}
+
+function renderAnalytics(){
+  const total=leads.length;
+  const won=leads.filter(l=>l.status==="Won");
+  const closed=won.reduce((sum,l)=>sum+(Number(l.dealValue)||0),0);
+  const open=leads.filter(l=>l.status!=="Won").reduce((sum,l)=>sum+(Number(l.dealValue)||0),0);
+  const average=won.length?closed/won.length:0;
+
+  document.getElementById("totalLeads").textContent=total;
+  document.getElementById("analyticsTotal").textContent=total;
+  document.getElementById("openRevenue").textContent=money(open);
+  document.getElementById("closedRevenue").textContent=money(closed);
+  document.getElementById("wonCount").textContent=won.length;
+  document.getElementById("averageDeal").textContent=money(average);
+  document.getElementById("conversionRate").textContent=total?Math.round(won.length/total*100)+"%":"0%";
+
+  const bars=document.getElementById("performanceBars");
+  const analytics=document.getElementById("analyticsBars");
+  bars.innerHTML="";
+  analytics.innerHTML="";
+
+  statuses.forEach(status=>{
+    const amount=leads.filter(l=>l.status===status).reduce((s,l)=>s+(Number(l.dealValue)||0),0);
+    const count=leads.filter(l=>l.status===status).length;
+    const max=Math.max(1,...statuses.map(s=>leads.filter(l=>l.status===s).reduce((a,l)=>a+(Number(l.dealValue)||0),0)));
+
+    const item=document.createElement("div");
+    item.innerHTML=`<div class="chart-row"><span>${status} (${count})</span><strong>${money(amount)}</strong></div><div class="bar"><span style="width:${amount/max*100}%"></span></div>`;
+    bars.appendChild(item);
+    analytics.appendChild(item.cloneNode(true));
+  });
+}
+
+function exportCSV(){
+  if(!leads.length){toast("No leads to export.");return;}
+
+  const columns=["name","address","phone","website","category","status","dealValue","followup","notes"];
+  const escape=value=>'"'+String(value??"").replace(/"/g,'""')+'"';
+  const rows=[columns.join(",")];
+
+  leads.forEach(lead=>{
+    rows.push(columns.map(key=>escape(lead[key])).join(","));
+  });
+
+  const blob=new Blob([rows.join("\n")],{type:"text/csv"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download="salespilot-leads.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+  toast("CSV export downloaded.");
+}
+
+function refresh(){
   renderLeads();
-};
-      const status = document.createElement("select");
-      statuses.forEach(value => {
-        const option = document.createElement("option");
-        option.value = value;
-        option.textContent = value;
-        status.appendChild(option);
-      });
-      status.value = lead.status || "New";
-      status.onchange = () => {
-        lead.status = status.value;
-        saveLeads();
-        renderLeads();
-      };
+  renderPipeline();
+  renderReminders();
+  renderAnalytics();
+}
 
-      const notes = document.createElement("textarea");
-      notes.placeholder = "Add notes about this prospect...";
-      notes.value = lead.notes || "";
-      notes.style.cssText = "width:100%;margin:12px 0;";
-
-      notes.onchange = () => {
-        lead.notes = notes.value;
-        saveLeads();
-      };
-
-      const followup = document.createElement("input");
-      followup.type = "date";
-      followup.value = lead.followup || "";
-      followup.style.cssText = "width:100%;margin-bottom:12px;";
-
-      followup.onchange = () => {
-        lead.followup = followup.value;
-        saveLeads();
-      };
-
-      const remove = document.createElement("button");
-      remove.textContent = "Remove Lead";
-      remove.style.background = "#a83232";
-      remove.style.color = "white";
-      remove.onclick = () => {
-        if (confirm("Remove this lead?")) {
-          leads.splice(index, 1);
-          saveLeads();
-          renderLeads();
-        }
-      };
-
-      card.append(title, details, dealValue, status, notes, followup, remove);
-      list.appendChild(card);
-    });
-  }
-
-  function addSaveButtons() {
-    const result = document.getElementById("researchResult");
-    if (!result) return;
-
-    result.querySelectorAll(":scope > div").forEach(card => {
-      if (card.dataset.leadSaveAdded) return;
-
-      const heading = card.querySelector("h3");
-      if (!heading) return;
-
-      card.dataset.leadSaveAdded = "true";
-
-      const saveButton = document.createElement("button");
-      saveButton.textContent = "＋ Save Lead";
-      saveButton.style.cssText = "width:100%;margin-top:12px;background:#36d98a;color:#06120b;";
-
-      saveButton.onclick = () => {
-        const name = heading.textContent.trim();
-
-        if (leads.some(lead => lead.name === name)) {
-          alert("This business is already saved.");
-          return;
-        }
-
-        const paragraphs = card.querySelectorAll("p");
-        const address = paragraphs.length
-          ? paragraphs[0].textContent
-          : "";
-
-        leads.push({
-          name,
-          address,
-          status: "New",
-          notes: "",
-          followup: ""
-        });
-
-        saveLeads();
-        renderLeads();
-        saveButton.textContent = "✓ Lead Saved";
-      };
-
-      card.appendChild(saveButton);
-    });
-  }
-
-  const result = document.getElementById("researchResult");
-
-  if (result) {
-    new MutationObserver(addSaveButtons).observe(result, {
-      childList: true,
-      subtree: true
-    });
-  }
-
-  renderLeads();
-  addSaveButtons();
-})();
-/* SALESPILOT REVENUE DASHBOARD */
-(function () {
-  const KEY = "salespilot_saved_leads";
-  const container = document.querySelector(".container");
-
-  if (!container) return;
-
-  const section = document.createElement("section");
-  section.className = "section";
-  section.style.marginTop = "30px";
-
-  section.innerHTML = `
-    <h2>💰 Revenue Dashboard</h2>
-    <p class="small">Track your sales pipeline and earnings.</p>
-    <div id="revenueStats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:20px;"></div>
-  `;
-
-  container.appendChild(section);
-
-  function updateRevenue() {
-    const leads = JSON.parse(localStorage.getItem(KEY) || "[]");
-
-    const total = leads.reduce((sum, lead) => sum + (Number(lead.dealValue) || 0), 0);
-
-    const closed = leads
-      .filter(lead => lead.status === "Converted")
-      .reduce((sum, lead) => sum + (Number(lead.dealValue) || 0), 0);
-
-    const open = total - closed;
-
-    const deals = leads.filter(lead => Number(lead.dealValue) > 0).length;
-
-    const stats = [
-      ["Total Pipeline", total],
-      ["Closed Revenue", closed],
-      ["Open Pipeline", open],
-      ["Deals Tracked", deals]
-    ];
-
-    document.getElementById("revenueStats").innerHTML = stats.map(item => `
-      <div style="padding:18px;background:#10251c;border:1px solid #294638;border-radius:12px;">
-        <small>${item[0]}</small>
-        <h2 style="color:#36d98a;margin:10px 0;">$${item[1].toLocaleString("en-US")}</h2>
-      </div>
-    `).join("");
-  }
-
-  updateRevenue();
-
-  window.addEventListener("storage", updateRevenue);
-
-  const leadList = document.getElementById("savedLeads");
-
-  if (leadList) {
-    new MutationObserver(updateRevenue).observe(leadList, {
-      childList: true,
-      subtree: true
-    });
-  }
-})();
+refresh();
 </script>
-
 </body>
 </html>
